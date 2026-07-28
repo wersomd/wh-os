@@ -8,6 +8,10 @@ export default defineConfig({
   },
   resolve: {
     // Разрешаем алиас "@/..." как в проекте (нужно тестам, тянущим @/lib/db).
-    alias: { "@": path.resolve(process.cwd(), "src") },
+    // "server-only" в node-окружении Vitest бросает — подменяем пустым модулем.
+    alias: {
+      "@": path.resolve(process.cwd(), "src"),
+      "server-only": path.resolve(process.cwd(), "src/test/empty-module.ts"),
+    },
   },
 });
