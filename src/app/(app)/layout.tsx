@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
+import JarvisBar from "@/features/jarvis/components/jarvis-bar";
 
 export default async function AppLayout({
   children,
@@ -20,6 +21,7 @@ export default async function AppLayout({
         <Topbar user={user} />
         <main className="flex-1 p-4 md:p-8">{children}</main>
       </div>
+      <JarvisBar />
     </div>
   );
 }
