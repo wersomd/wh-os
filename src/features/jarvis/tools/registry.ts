@@ -18,6 +18,14 @@ export function getTool(name: string): Entry | undefined {
   return byName.get(name);
 }
 
+export function classifyToolUse(name: string): {
+  kind: "read" | "write" | "error";
+} {
+  const tool = byName.get(name);
+  if (!tool) return { kind: "error" };
+  return { kind: tool.kind };
+}
+
 export const toolDefinitions: Anthropic.Messages.Tool[] = entries.map((e) => {
   const jsonSchema = z.toJSONSchema(e.schema) as Record<string, unknown>;
   // Anthropic requires an object schema at the top level.
