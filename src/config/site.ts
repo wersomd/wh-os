@@ -1,6 +1,6 @@
 export const siteConfig = {
-  name: "Wediff",
-  description: "Личная операционная система для жизни",
+  name: "JinseiOS",
+  description: "Личная операционная система жизни",
   defaultCurrency: "KZT",
   supportedCurrencies: ["KZT", "USD"] as const,
 } as const;
