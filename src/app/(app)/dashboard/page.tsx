@@ -18,10 +18,11 @@ import {
 import { AnimatedIn } from "@/components/shared/animated-in";
 import { DashboardTasks } from "@/features/dashboard/components/dashboard-tasks";
 import { TodayFocus } from "@/features/dashboard/components/today-focus";
+import { FinancePulse } from "@/features/dashboard/components/finance-pulse";
 import { DEFAULT_HABIT_COLOR } from "@/features/habits/constants";
 import { formatMoney } from "@/features/finances/money";
 import { MOOD_EMOJI, MOOD_LABEL } from "@/features/journal/constants";
-import { getDashboardSummary, getTodayFocus } from "@/features/dashboard/queries";
+import { getDashboardSummary, getFinancePulse, getTodayFocus } from "@/features/dashboard/queries";
 import type { AgendaKind } from "@/features/agenda/queries";
 import { cn } from "@/lib/utils";
 
@@ -95,6 +96,7 @@ function greeting(hour: number): string {
 export default async function DashboardPage() {
   const s = await getDashboardSummary();
   const today = await getTodayFocus();
+  const pulse = await getFinancePulse();
   const now = new Date();
   const currencies = Object.entries(s.balances);
   const debtCurrencies = Object.entries(s.debts.totals);
@@ -206,6 +208,10 @@ export default async function DashboardPage() {
           />
         </AnimatedIn>
       </div>
+
+      <AnimatedIn delay={0.22} className="mt-5">
+        <FinancePulse data={pulse} />
+      </AnimatedIn>
 
       {/* Agenda + Tasks */}
       <div className="mt-6 grid gap-5 lg:grid-cols-3">

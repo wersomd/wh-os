@@ -2,11 +2,13 @@ import "server-only";
 import { addDays, endOfDay, endOfMonth, format, startOfDay, startOfMonth, startOfWeek } from "date-fns";
 import { DebtStatus, GoalStatus, TaskStatus, TransactionType } from "@prisma/client";
 import { db } from "@/lib/db";
-import { getAccountsWithBalance } from "@/features/finances/queries";
+import { getAccountsWithBalance, getBudgetsWithSpend } from "@/features/finances/queries";
 import { computeDebtTotals, isOverdue } from "@/features/debts/summary";
+import { getDebtsView } from "@/features/debts/queries";
 import { getAgenda } from "@/features/agenda/queries";
 import { entryDayKey, todayKey, weekCount } from "@/features/habits/dates";
 import { buildTodayFocus, type FocusItem } from "./lib/today-focus";
+import { computeFinancePulse, type FinancePulse } from "./lib/finance-pulse";
 
 export async function getDashboardSummary() {
   const now = new Date();
@@ -202,6 +204,35 @@ export async function getTodayFocus(): Promise<FocusItem[]> {
     tasks,
     habits,
     doneHabitIds: todayEntries.map((e) => e.habitId),
+    now,
+  });
+}
+
+// Finance pulse widget: this month's budget spend, a 30-day expense
+// sparkline, and net worth (accounts minus open debts). Gathers rows from
+// the existing finance/debt helpers and hands them to the pure compute fn.
+export async function getFinancePulse(): Promise<FinancePulse> {
+  const now = new Date();
+  const [accounts, budgets, counterparties, expenses] = await Promise.all([
+    getAccountsWithBalance(),
+    getBudgetsWithSpend(),
+    getDebtsView(),
+    db.transaction.findMany({
+      where: {
+        type: TransactionType.EXPENSE,
+        date: { gte: startOfMonth(now), lte: endOfMonth(now) },
+      },
+      select: { date: true, amount: true },
+    }),
+  ]);
+  const debts = counterparties.flatMap((c) =>
+    c.debts.map((d) => ({ direction: d.direction, status: d.status, remaining: d.remaining })),
+  );
+  return computeFinancePulse({
+    accounts: accounts.map((a) => ({ balance: a.balance, archived: a.archived })),
+    debts,
+    budgets: budgets.map((b) => ({ amount: b.amount, spent: b.spent })),
+    monthExpenses: expenses.map((e) => ({ date: e.date, amount: e.amount.toNumber() })),
     now,
   });
 }
