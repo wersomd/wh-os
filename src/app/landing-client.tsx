@@ -68,7 +68,7 @@ function DashboardMockup() {
       {/* Sidebar */}
       <rect width="220" height="800" fill="#141418" />
       <text x="24" y="42" fill="#a78bfa" fontSize="20" fontWeight="700" fontFamily="system-ui,sans-serif">
-        Wediff
+        JinseiOS
       </text>
       {(["Дашборд", "Финансы", "Задачи", "Привычки", "Цели", "Дневник", "Здоровье"] as const).map(
         (label, i) => (
@@ -337,7 +337,7 @@ export function LandingClient() {
               <span aria-hidden="true" className="size-3 rounded-full bg-amber-500" />
               <span aria-hidden="true" className="size-3 rounded-full bg-emerald-500" />
               <div className="ml-4 flex-1 rounded-md bg-muted/50 px-3 py-1 text-xs text-muted-foreground">
-                wediff.app/dashboard
+                jinseios.app/dashboard
               </div>
             </div>
             <DashboardMockup />
@@ -371,7 +371,7 @@ export function LandingClient() {
 
       {/* ── Footer ── */}
       <footer className="border-t border-border px-4 py-8 text-center text-sm text-muted-foreground">
-        Wediff · 2026
+        JinseiOS · 2026
       </footer>
     </main>
   );

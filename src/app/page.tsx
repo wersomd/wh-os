@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LandingClient } from "./landing-client";
 
 export const metadata: Metadata = {
-  title: "Wediff — личная операционная система",
+  title: "JinseiOS — личная операционная система",
   description: "Финансы, задачи, привычки, цели — всё под контролем.",
 };
 
