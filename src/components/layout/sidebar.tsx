@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { mainNav, footerNav, type NavItem } from "@/config/nav";
-import { siteConfig } from "@/config/site";
+import BrandMark from "@/components/shared/brand-mark";
 
 function NavLink({
   item,
@@ -50,10 +50,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
         onClick={onNavigate}
         className="mb-4 flex items-center gap-2.5 px-2 py-2"
       >
-        <span className="size-6 rounded-md bg-primary" />
-        <span className="text-lg font-semibold tracking-tight">
-          {siteConfig.name}
-        </span>
+        <BrandMark withWordmark />
       </Link>
 
       <nav className="flex flex-1 flex-col gap-0.5">
