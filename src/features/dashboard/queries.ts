@@ -192,7 +192,7 @@ export async function getTodayFocus(): Promise<FocusItem[]> {
       where: { completedAt: null, dueDate: { gte: startOfDay(now), lte: endOfDay(now) } },
       select: { id: true, title: true, dueDate: true, completedAt: true },
     }),
-    db.habit.findMany({ select: { id: true, name: true } }),
+    db.habit.findMany({ where: { archived: false }, select: { id: true, name: true } }),
     db.habitEntry.findMany({
       where: { date: { gte: startOfDay(now), lte: endOfDay(now) } },
       select: { habitId: true },
