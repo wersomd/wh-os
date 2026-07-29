@@ -6,6 +6,9 @@ export type PulseBudget = { amount: number; spent: number };
 export type PulseExpense = { date: Date; amount: number };
 export type FinancePulse = { spent: number; budget: number; netWorth: number; spark: number[] };
 
+// Суммы (балансы счетов, долги, расходы) складываются по всем валютам (KZT + USD)
+// в единое число как в дефолтной валюте — намеренное упрощение для single-user MVP,
+// см. аналогичный подход в getBudgetsWithSpend/getDashboardSummary.
 export function computeFinancePulse(input: {
   accounts: PulseAccount[];
   debts: PulseDebt[];

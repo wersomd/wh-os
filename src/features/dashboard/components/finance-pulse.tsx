@@ -23,7 +23,7 @@ export function FinancePulse({ data }: { data: Pulse }) {
       </div>
 
       <div className="flex items-baseline justify-between text-sm">
-        <span className="text-muted-foreground">Траты за месяц</span>
+        <span className="text-muted-foreground">Траты по бюджетам</span>
         <span className="tabular-nums">
           {formatMoney(data.spent, siteConfig.defaultCurrency)}{" "}
           <span className="text-muted-foreground">/ {formatMoney(data.budget, siteConfig.defaultCurrency)}</span>
