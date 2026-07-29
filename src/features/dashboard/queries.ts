@@ -1,11 +1,12 @@
 import "server-only";
-import { addDays, endOfDay, endOfMonth, format, startOfMonth, startOfWeek } from "date-fns";
+import { addDays, endOfDay, endOfMonth, format, startOfDay, startOfMonth, startOfWeek } from "date-fns";
 import { DebtStatus, GoalStatus, TaskStatus, TransactionType } from "@prisma/client";
 import { db } from "@/lib/db";
 import { getAccountsWithBalance } from "@/features/finances/queries";
 import { computeDebtTotals, isOverdue } from "@/features/debts/summary";
 import { getAgenda } from "@/features/agenda/queries";
 import { entryDayKey, todayKey, weekCount } from "@/features/habits/dates";
+import { buildTodayFocus, type FocusItem } from "./lib/today-focus";
 
 export async function getDashboardSummary() {
   const now = new Date();
@@ -183,3 +184,24 @@ export async function getDashboardSummary() {
 }
 
 export type DashboardSummary = Awaited<ReturnType<typeof getDashboardSummary>>;
+
+export async function getTodayFocus(): Promise<FocusItem[]> {
+  const now = new Date();
+  const [tasks, habits, todayEntries] = await Promise.all([
+    db.task.findMany({
+      where: { completedAt: null, dueDate: { gte: startOfDay(now), lte: endOfDay(now) } },
+      select: { id: true, title: true, dueDate: true, completedAt: true },
+    }),
+    db.habit.findMany({ select: { id: true, name: true } }),
+    db.habitEntry.findMany({
+      where: { date: { gte: startOfDay(now), lte: endOfDay(now) } },
+      select: { habitId: true },
+    }),
+  ]);
+  return buildTodayFocus({
+    tasks,
+    habits,
+    doneHabitIds: todayEntries.map((e) => e.habitId),
+    now,
+  });
+}

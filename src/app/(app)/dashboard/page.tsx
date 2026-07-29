@@ -17,10 +17,11 @@ import {
 } from "lucide-react";
 import { AnimatedIn } from "@/components/shared/animated-in";
 import { DashboardTasks } from "@/features/dashboard/components/dashboard-tasks";
+import { TodayFocus } from "@/features/dashboard/components/today-focus";
 import { DEFAULT_HABIT_COLOR } from "@/features/habits/constants";
 import { formatMoney } from "@/features/finances/money";
 import { MOOD_EMOJI, MOOD_LABEL } from "@/features/journal/constants";
-import { getDashboardSummary } from "@/features/dashboard/queries";
+import { getDashboardSummary, getTodayFocus } from "@/features/dashboard/queries";
 import type { AgendaKind } from "@/features/agenda/queries";
 import { cn } from "@/lib/utils";
 
@@ -93,6 +94,7 @@ function greeting(hour: number): string {
 
 export default async function DashboardPage() {
   const s = await getDashboardSummary();
+  const today = await getTodayFocus();
   const now = new Date();
   const currencies = Object.entries(s.balances);
   const debtCurrencies = Object.entries(s.debts.totals);
@@ -119,6 +121,10 @@ export default async function DashboardPage() {
             <span className="text-muted-foreground">настроение сегодня</span>
           </Link>
         )}
+      </div>
+
+      <div className="mb-6">
+        <TodayFocus items={today} />
       </div>
 
       {/* Key numbers — Долги replaced with Расходы (месяц) */}
