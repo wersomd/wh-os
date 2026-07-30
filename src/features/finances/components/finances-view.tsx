@@ -39,6 +39,7 @@ import { TransferDialog } from "./transfer-dialog";
 import { BudgetsSection } from "./budgets-section";
 import { AnalyticsTab } from "./analytics-tab";
 import { CategoriesTab } from "./categories-tab";
+import { SavingsInsightCard } from "./savings-insight-card";
 import {
   deleteAccount,
   deleteTransaction,
@@ -50,6 +51,7 @@ import type {
   AccountWithBalance,
   BudgetRow,
   CategoryWithCount,
+  FinanceInsights,
   TransactionRow,
 } from "../queries";
 
@@ -68,11 +70,13 @@ export function FinancesView({
   transactions,
   categories,
   budgets,
+  insights,
 }: {
   accounts: AccountWithBalance[];
   transactions: TransactionRow[];
   categories: CategoryWithCount[];
   budgets: BudgetRow[];
+  insights: FinanceInsights;
 }) {
   const router = useRouter();
   const [, start] = useTransition();
@@ -190,6 +194,10 @@ export function FinancesView({
       {tab === "categories" && <CategoriesTab categories={categories} />}
       {tab === "overview" && (
         <>
+          <div className="mb-8">
+            <SavingsInsightCard insights={insights} accounts={accounts} />
+          </div>
+
           {accounts.length === 0 ? (
             <EmptyState
               icon={Wallet}
