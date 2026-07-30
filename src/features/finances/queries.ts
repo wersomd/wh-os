@@ -2,6 +2,7 @@ import "server-only";
 import { endOfMonth, startOfMonth } from "date-fns";
 import { TransactionType } from "@prisma/client";
 import { db } from "@/lib/db";
+import { pickQuoteOfDay } from "./lib/quotes";
 
 // Accounts with a computed current balance: startBalance + income − expense.
 // Decimal is converted to a plain number at this boundary for the client.
@@ -123,3 +124,59 @@ export async function getBudgetsWithSpend() {
 }
 
 export type BudgetRow = Awaited<ReturnType<typeof getBudgetsWithSpend>>[number];
+
+// Babylon-rule savings progress + tip of the day. Settings persist in the
+// generic key/value Setting table — defaults apply until the user configures
+// a rate/account via updateSavingsSettings.
+const SAVINGS_RATE_KEY = "finance.savingsRate";
+const SAVINGS_ACCOUNT_KEY = "finance.savingsAccountId";
+const DEFAULT_SAVINGS_RATE = 10;
+
+export async function getFinanceInsights() {
+  const now = new Date();
+  const from = startOfMonth(now);
+  const to = endOfMonth(now);
+
+  const [rateSetting, accountSetting, incomeSum] = await Promise.all([
+    db.setting.findUnique({ where: { key: SAVINGS_RATE_KEY } }),
+    db.setting.findUnique({ where: { key: SAVINGS_ACCOUNT_KEY } }),
+    db.transaction.aggregate({
+      where: {
+        type: TransactionType.INCOME,
+        date: { gte: from, lte: to },
+        category: { name: { not: "Перевод" } },
+      },
+      _sum: { amount: true },
+    }),
+  ]);
+
+  const savingsRate =
+    typeof rateSetting?.value === "number" ? rateSetting.value : DEFAULT_SAVINGS_RATE;
+  const savingsAccountId =
+    typeof accountSetting?.value === "string" ? accountSetting.value : null;
+  const income = incomeSum._sum.amount?.toNumber() ?? 0;
+
+  const savedSum = savingsAccountId
+    ? await db.transaction.aggregate({
+        where: {
+          type: TransactionType.INCOME,
+          date: { gte: from, lte: to },
+          category: { name: "Перевод" },
+          accountId: savingsAccountId,
+        },
+        _sum: { amount: true },
+      })
+    : null;
+  const saved = savedSum?._sum.amount?.toNumber() ?? 0;
+
+  return {
+    income,
+    savingsRate,
+    savingsAccountId,
+    saved,
+    target: income * (savingsRate / 100),
+    quote: pickQuoteOfDay(now),
+  };
+}
+
+export type FinanceInsights = Awaited<ReturnType<typeof getFinanceInsights>>;

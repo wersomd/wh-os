@@ -9,11 +9,12 @@ import {
   budgetSchema,
   categoryCreateSchema,
   categoryUpdateSchema,
+  savingsSettingsSchema,
   transactionCreateSchema,
   transactionUpdateSchema,
   transferSchema,
 } from "./schema";
-import { TransactionType } from "@prisma/client";
+import { Prisma, TransactionType } from "@prisma/client";
 
 // Service category for the paired transactions of an account-to-account
 // transfer, so transfers don't read as real income/expense in analytics.
@@ -280,5 +281,30 @@ export async function deleteCategory(id: string): Promise<ActionResult> {
   }
   await db.category.delete({ where: { id } });
   revalidatePath("/finances");
+  return { ok: true };
+}
+
+// ── Savings settings ─────────────────────────────────────────────────────────
+export async function updateSavingsSettings(input: unknown): Promise<ActionResult> {
+  await requireAuth();
+  const parsed = savingsSettingsSchema.safeParse(input);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Проверьте поля" };
+  }
+  const { rate, accountId } = parsed.data;
+  await db.$transaction([
+    db.setting.upsert({
+      where: { key: "finance.savingsRate" },
+      create: { key: "finance.savingsRate", value: rate },
+      update: { value: rate },
+    }),
+    db.setting.upsert({
+      where: { key: "finance.savingsAccountId" },
+      create: { key: "finance.savingsAccountId", value: accountId ?? Prisma.JsonNull },
+      update: { value: accountId ?? Prisma.JsonNull },
+    }),
+  ]);
+  revalidatePath("/finances");
+  revalidatePath("/dashboard");
   return { ok: true };
 }

@@ -53,6 +53,11 @@ export const categoryUpdateSchema = categoryCreateSchema.extend({
   id: z.string().min(1),
 });
 
+export const savingsSettingsSchema = z.object({
+  rate: z.coerce.number().min(1, "Минимум 1%").max(100, "Максимум 100%"),
+  accountId: z.string().min(1).nullable(),
+});
+
 export type AccountCreateInput = z.input<typeof accountCreateSchema>;
 export type TransactionCreateInput = z.input<typeof transactionCreateSchema>;
 export type TransferInput = z.input<typeof transferSchema>;
