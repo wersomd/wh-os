@@ -19,6 +19,7 @@ import { AnimatedIn } from "@/components/shared/animated-in";
 import { DashboardTasks } from "@/features/dashboard/components/dashboard-tasks";
 import { TodayFocus } from "@/features/dashboard/components/today-focus";
 import { FinancePulse } from "@/features/dashboard/components/finance-pulse";
+import { SavingsInsightCard } from "@/features/finances/components/savings-insight-card";
 import { DEFAULT_HABIT_COLOR } from "@/features/habits/constants";
 import { formatMoney } from "@/features/finances/money";
 import { MOOD_EMOJI, MOOD_LABEL } from "@/features/journal/constants";
@@ -444,6 +445,10 @@ export default async function DashboardPage() {
           </Panel>
         </AnimatedIn>
       </div>
+
+      <AnimatedIn delay={0.52} className="mt-5">
+        <SavingsInsightCard insights={s.insights} accounts={s.accounts} />
+      </AnimatedIn>
 
       {s.pinnedNotes > 0 && (
         <Link

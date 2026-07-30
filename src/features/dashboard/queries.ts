@@ -2,7 +2,11 @@ import "server-only";
 import { addDays, endOfDay, endOfMonth, format, startOfDay, startOfMonth, startOfWeek } from "date-fns";
 import { DebtStatus, GoalStatus, TaskStatus, TransactionType } from "@prisma/client";
 import { db } from "@/lib/db";
-import { getAccountsWithBalance, getBudgetsWithSpend } from "@/features/finances/queries";
+import {
+  getAccountsWithBalance,
+  getBudgetsWithSpend,
+  getFinanceInsights,
+} from "@/features/finances/queries";
 import { computeDebtTotals, isOverdue } from "@/features/debts/summary";
 import { getDebtsView } from "@/features/debts/queries";
 import { getAgenda } from "@/features/agenda/queries";
@@ -30,6 +34,7 @@ export async function getDashboardSummary() {
     todayEntry,
     agenda,
     monthlyTotals,
+    insights,
   ] = await Promise.all([
     // Tasks due today or overdue, not finished.
     db.task.findMany({
@@ -92,6 +97,7 @@ export async function getDashboardSummary() {
       },
       _sum: { amount: true },
     }),
+    getFinanceInsights(),
   ]);
 
   // Open debts → per-currency net balance + overdue count.
@@ -182,6 +188,8 @@ export async function getDashboardSummary() {
     todayMood: todayEntry?.mood ?? null,
     agenda: agenda.slice(0, 7),
     financeThisMonth: { income: monthIncome, expense: monthExpense },
+    insights,
+    accounts: accounts.map((a) => ({ id: a.id, name: a.name, currency: a.currency })),
   };
 }
 
