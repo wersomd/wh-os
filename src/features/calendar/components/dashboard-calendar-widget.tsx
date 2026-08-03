@@ -73,7 +73,11 @@ export function DashboardCalendarWidget({
                 {visible.map((item) => (
                   <span
                     key={item.id}
-                    className={cn("size-1 rounded-full", CALENDAR_ITEM_DOT[item.kind])}
+                    className={cn(
+                      "rounded-full",
+                      item.kind === "debt" ? "size-1.5" : "size-1",
+                      CALENDAR_ITEM_DOT[item.kind],
+                    )}
                   />
                 ))}
               </div>

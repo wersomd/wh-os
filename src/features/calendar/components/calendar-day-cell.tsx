@@ -2,10 +2,10 @@
 
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { CALENDAR_ITEM_DOT } from "../constants";
+import { CALENDAR_ITEM_CHIP } from "../constants";
 import type { CalendarItem } from "../queries";
 
-const MAX_DOTS = 3;
+const MAX_VISIBLE = 3;
 
 export function CalendarDayCell({
   day,
@@ -20,7 +20,7 @@ export function CalendarDayCell({
   items: CalendarItem[];
   onClick: () => void;
 }) {
-  const visible = items.slice(0, MAX_DOTS);
+  const visible = items.slice(0, MAX_VISIBLE);
   const overflow = items.length - visible.length;
 
   return (
@@ -28,7 +28,7 @@ export function CalendarDayCell({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex min-h-20 flex-col items-start gap-1 bg-card p-2 text-left transition-colors hover:bg-accent/50",
+        "flex min-h-28 flex-col items-stretch gap-1 bg-card p-2 text-left align-top transition-colors hover:bg-accent/50",
         !inMonth && "bg-card/40 text-muted-foreground/50",
       )}
     >
@@ -41,16 +41,21 @@ export function CalendarDayCell({
         {format(day, "d")}
       </span>
       {items.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1">
+        <div className="flex min-w-0 flex-col gap-0.5">
           {visible.map((item) => (
             <span
               key={item.id}
-              className={cn("size-1.5 rounded-full", CALENDAR_ITEM_DOT[item.kind])}
               title={item.title}
-            />
+              className={cn(
+                "truncate rounded px-1 py-0.5 text-[10px] leading-tight",
+                CALENDAR_ITEM_CHIP[item.kind],
+              )}
+            >
+              {item.title}
+            </span>
           ))}
           {overflow > 0 && (
-            <span className="text-[10px] text-muted-foreground">+{overflow}</span>
+            <span className="px-1 text-[10px] text-muted-foreground">+{overflow} ещё</span>
           )}
         </div>
       )}

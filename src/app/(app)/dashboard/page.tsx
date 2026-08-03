@@ -130,6 +130,10 @@ export default async function DashboardPage() {
         )}
       </div>
 
+      <AnimatedIn delay={0} className="mb-6">
+        <DashboardCalendarWidget month={s.calendarMonth.month} items={s.calendarMonth.items} />
+      </AnimatedIn>
+
       <div className="mb-6">
         <TodayFocus items={today} />
       </div>
@@ -216,10 +220,6 @@ export default async function DashboardPage() {
 
       <AnimatedIn delay={0.22} className="mt-5">
         <FinancePulse data={pulse} />
-      </AnimatedIn>
-
-      <AnimatedIn delay={0.23} className="mt-5">
-        <DashboardCalendarWidget month={s.calendarMonth.month} items={s.calendarMonth.items} />
       </AnimatedIn>
 
       {/* Ближайшее + Tasks */}

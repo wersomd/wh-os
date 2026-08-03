@@ -30,7 +30,7 @@ export async function createCalendarEvent(input: unknown): Promise<ActionResult>
   }
   const { title, date, time, note } = parsed.data;
   await db.calendarEvent.create({
-    data: { title, note: clean(note), startAt: new Date(`${date}T${time}:00.000Z`) },
+    data: { title, note: clean(note), startAt: new Date(`${date}T${time}:00`) },
   });
   revalidateCalendar();
   return { ok: true };
@@ -45,7 +45,7 @@ export async function updateCalendarEvent(input: unknown): Promise<ActionResult>
   const { id, title, date, time, note } = parsed.data;
   await db.calendarEvent.update({
     where: { id },
-    data: { title, note: clean(note), startAt: new Date(`${date}T${time}:00.000Z`) },
+    data: { title, note: clean(note), startAt: new Date(`${date}T${time}:00`) },
   });
   revalidateCalendar();
   return { ok: true };
