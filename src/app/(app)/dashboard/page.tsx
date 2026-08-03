@@ -4,7 +4,8 @@ import { differenceInCalendarDays, format, isToday, isTomorrow } from "date-fns"
 import { ru } from "date-fns/locale";
 import {
   CalendarClock,
-  CalendarDays,
+  CalendarPlus,
+  CalendarRange,
   CheckSquare,
   CreditCard,
   Flame,
@@ -24,7 +25,8 @@ import { DEFAULT_HABIT_COLOR } from "@/features/habits/constants";
 import { formatMoney } from "@/features/finances/money";
 import { MOOD_EMOJI, MOOD_LABEL } from "@/features/journal/constants";
 import { getDashboardSummary, getFinancePulse, getTodayFocus } from "@/features/dashboard/queries";
-import type { AgendaKind } from "@/features/agenda/queries";
+import { DashboardCalendarWidget } from "@/features/calendar/components/dashboard-calendar-widget";
+import type { CalendarKind } from "@/features/calendar/queries";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Главная" };
@@ -73,18 +75,20 @@ const ACCENT: Record<
   },
 };
 
-const AGENDA_ACCENT: Record<AgendaKind, Accent> = {
+const CALENDAR_ACCENT: Record<CalendarKind, Accent> = {
   task: "violet",
   goal: "fuchsia",
   debt: "rose",
   subscription: "sky",
+  event: "emerald",
 };
 
-const AGENDA_ICON: Record<AgendaKind, LucideIcon> = {
+const CALENDAR_ICON: Record<CalendarKind, LucideIcon> = {
   task: CheckSquare,
   goal: Target,
   debt: HandCoins,
   subscription: CreditCard,
+  event: CalendarPlus,
 };
 
 function greeting(hour: number): string {
@@ -214,17 +218,21 @@ export default async function DashboardPage() {
         <FinancePulse data={pulse} />
       </AnimatedIn>
 
-      {/* Agenda + Tasks */}
+      <AnimatedIn delay={0.23} className="mt-5">
+        <DashboardCalendarWidget month={s.calendarMonth.month} items={s.calendarMonth.items} />
+      </AnimatedIn>
+
+      {/* Ближайшее + Tasks */}
       <div className="mt-6 grid gap-5 lg:grid-cols-3">
         <AnimatedIn delay={0.24} className="lg:col-span-2">
-          <Panel title="Повестка" href="/agenda" icon={CalendarDays} accent="sky">
-            {s.agenda.length === 0 ? (
+          <Panel title="Ближайшее" href="/calendar" icon={CalendarRange} accent="sky">
+            {s.upcoming.length === 0 ? (
               <Empty text="На ближайшие 30 дней ничего не запланировано." />
             ) : (
               <ul className="divide-y divide-border">
-                {s.agenda.map((item) => {
-                  const Icon = AGENDA_ICON[item.kind];
-                  const acc = ACCENT[AGENDA_ACCENT[item.kind]];
+                {s.upcoming.map((item) => {
+                  const Icon = CALENDAR_ICON[item.kind];
+                  const acc = ACCENT[CALENDAR_ACCENT[item.kind]];
                   const overdue = differenceInCalendarDays(item.date, now) < 0;
                   return (
                     <li key={item.id} className="flex items-center gap-3 py-2.5">

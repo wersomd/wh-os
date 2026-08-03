@@ -1,6 +1,6 @@
 import {
   LayoutDashboard,
-  CalendarDays,
+  CalendarRange,
   CheckSquare,
   FolderKanban,
   Inbox,
@@ -24,7 +24,7 @@ export type NavItem = {
 
 export const mainNav: NavItem[] = [
   { title: "Главная", href: "/dashboard", icon: LayoutDashboard },
-  { title: "Повестка", href: "/agenda", icon: CalendarDays },
+  { title: "Календарь", href: "/calendar", icon: CalendarRange },
   { title: "Задачи", href: "/tasks", icon: CheckSquare },
   { title: "Проекты", href: "/projects", icon: FolderKanban },
   { title: "Заявки", href: "/leads", icon: Inbox },

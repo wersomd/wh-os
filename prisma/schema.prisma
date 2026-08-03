@@ -267,6 +267,18 @@ model Subscription {
   @@index([nextPaymentDate])
 }
 
+// ─────────────────────────── CALENDAR ───────────────────────────
+model CalendarEvent {
+  id        String   @id @default(cuid())
+  title     String
+  note      String?
+  startAt   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([startAt])
+}
+
 // ─────────────────────────── NOTES ───────────────────────────
 model Note {
   id        String   @id @default(cuid())

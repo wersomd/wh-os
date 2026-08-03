@@ -9,7 +9,7 @@ import {
 } from "@/features/finances/queries";
 import { computeDebtTotals, isOverdue } from "@/features/debts/summary";
 import { getDebtsView } from "@/features/debts/queries";
-import { getAgenda } from "@/features/agenda/queries";
+import { getCalendarItems, getUpcomingItems } from "@/features/calendar/queries";
 import { entryDayKey, todayKey, weekCount } from "@/features/habits/dates";
 import { buildTodayFocus, type FocusItem } from "./lib/today-focus";
 import { computeFinancePulse, type FinancePulse } from "./lib/finance-pulse";
@@ -32,7 +32,8 @@ export async function getDashboardSummary() {
     openDebts,
     activeGoals,
     todayEntry,
-    agenda,
+    upcoming,
+    calendarMonthItems,
     monthlyTotals,
     insights,
   ] = await Promise.all([
@@ -87,7 +88,8 @@ export async function getDashboardSummary() {
       where: { date: todayDate },
       select: { mood: true },
     }),
-    getAgenda(),
+    getUpcomingItems(),
+    getCalendarItems({ from: startOfMonth(now), to: endOfMonth(now) }),
     // This month income + expense totals
     db.transaction.groupBy({
       by: ["type"],
@@ -186,7 +188,8 @@ export async function getDashboardSummary() {
     },
     goals,
     todayMood: todayEntry?.mood ?? null,
-    agenda: agenda.slice(0, 7),
+    upcoming: upcoming.slice(0, 7),
+    calendarMonth: { month: startOfMonth(now), items: calendarMonthItems },
     financeThisMonth: { income: monthIncome, expense: monthExpense },
     insights,
     accounts: accounts.map((a) => ({ id: a.id, name: a.name, currency: a.currency })),
