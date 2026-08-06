@@ -44,9 +44,11 @@ model Tag {
 
 // ─────────────────────────── PROJECTS ───────────────────────────
 enum ProjectStatus {
-  ACTIVE
+  PLANNING
+  IN_PROGRESS
+  REVIEW
   ON_HOLD
-  COMPLETED
+  DONE
   ARCHIVED
 }
 
@@ -54,7 +56,8 @@ model Project {
   id          String        @id @default(cuid())
   name        String
   description String?
-  status      ProjectStatus @default(ACTIVE)
+  status      ProjectStatus @default(PLANNING)
+  deadline    DateTime?
   color       String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
