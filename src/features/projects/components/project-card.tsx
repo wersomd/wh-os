@@ -9,19 +9,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DEFAULT_PROJECT_COLOR, PROJECT_STATUS_LABELS } from "../constants";
-import type { ProjectWithCount } from "../queries";
+import { cn } from "@/lib/utils";
+import { describeDeadline } from "../progress";
+import {
+  DEADLINE_TONE_CLASS,
+  DEFAULT_PROJECT_COLOR,
+  PROJECT_STATUS_BADGE_CLASS,
+  PROJECT_STATUS_LABELS,
+} from "../constants";
+import type { ProjectWithProgress } from "../queries";
 
 export function ProjectCard({
   project,
   onEdit,
   onDelete,
 }: {
-  project: ProjectWithCount;
+  project: ProjectWithProgress;
   onEdit: () => void;
   onDelete: () => void;
 }) {
-  const count = project._count.tasks;
+  const deadlineInfo = describeDeadline(new Date(), project.deadline);
   return (
     <div className="group relative rounded-xl border border-border bg-card p-5 transition-colors hover:border-foreground/20">
       <Link
@@ -67,9 +74,29 @@ export function ProjectCard({
       )}
 
       <div className="mt-4 flex items-center gap-2">
-        <Badge variant="secondary">{PROJECT_STATUS_LABELS[project.status]}</Badge>
+        <Badge
+          variant="secondary"
+          className={PROJECT_STATUS_BADGE_CLASS[project.status]}
+        >
+          {PROJECT_STATUS_LABELS[project.status]}
+        </Badge>
         <span className="text-xs text-muted-foreground">
-          {count} {pluralizeTasks(count)}
+          {project.taskCount} {pluralizeTasks(project.taskCount)}
+        </span>
+      </div>
+
+      <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full rounded-full bg-primary transition-all"
+          style={{ width: `${project.progress.percent ?? 0}%` }}
+        />
+      </div>
+      <div className="mt-1.5 flex items-center justify-between text-xs">
+        <span className="text-muted-foreground">
+          {project.progress.percent === null ? "Нет задач" : `${project.progress.percent}%`}
+        </span>
+        <span className={cn(DEADLINE_TONE_CLASS[deadlineInfo.tone])}>
+          {deadlineInfo.label}
         </span>
       </div>
     </div>
