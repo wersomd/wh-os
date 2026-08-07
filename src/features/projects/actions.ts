@@ -29,12 +29,13 @@ export async function createProject(
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Проверьте поля" };
   }
-  const { name, description, status, color } = parsed.data;
+  const { name, description, status, deadline, color } = parsed.data;
   await db.project.create({
     data: {
       name,
       description: clean(description),
       status,
+      deadline,
       color: clean(color),
     },
   });
@@ -50,13 +51,14 @@ export async function updateProject(
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Проверьте поля" };
   }
-  const { id, name, description, status, color } = parsed.data;
+  const { id, name, description, status, deadline, color } = parsed.data;
   await db.project.update({
     where: { id },
     data: {
       name,
       description: clean(description),
       status,
+      deadline,
       color: clean(color),
     },
   });
