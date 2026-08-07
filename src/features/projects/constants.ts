@@ -1,18 +1,42 @@
 import { ProjectStatus } from "@prisma/client";
+import type { DeadlineTone } from "./progress";
 
 export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
-  ACTIVE: "Активен",
+  PLANNING: "Планирование",
+  IN_PROGRESS: "В работе",
+  REVIEW: "Проверка",
   ON_HOLD: "На паузе",
-  COMPLETED: "Завершён",
+  DONE: "Готово",
   ARCHIVED: "В архиве",
 };
 
 export const PROJECT_STATUS_ORDER: ProjectStatus[] = [
-  ProjectStatus.ACTIVE,
+  ProjectStatus.PLANNING,
+  ProjectStatus.IN_PROGRESS,
+  ProjectStatus.REVIEW,
   ProjectStatus.ON_HOLD,
-  ProjectStatus.COMPLETED,
+  ProjectStatus.DONE,
   ProjectStatus.ARCHIVED,
 ];
+
+// Stage badge accent — same "chip" formula as the Dashboard's ACCENT map
+// (bg-<color>-500/15 text-<color>-400), applied over Badge's `secondary`
+// variant via tailwind-merge.
+export const PROJECT_STATUS_BADGE_CLASS: Record<ProjectStatus, string> = {
+  PLANNING: "bg-slate-500/15 text-slate-400",
+  IN_PROGRESS: "bg-violet-500/15 text-violet-400",
+  REVIEW: "bg-amber-500/15 text-amber-400",
+  ON_HOLD: "bg-sky-500/15 text-sky-400",
+  DONE: "bg-emerald-500/15 text-emerald-400",
+  ARCHIVED: "bg-neutral-500/15 text-neutral-400",
+};
+
+export const DEADLINE_TONE_CLASS: Record<DeadlineTone, string> = {
+  overdue: "text-destructive",
+  soon: "text-amber-500",
+  normal: "text-muted-foreground",
+  none: "text-muted-foreground/70",
+};
 
 // A small palette so projects get a consistent accent without a color wheel.
 export const PROJECT_COLORS = [
