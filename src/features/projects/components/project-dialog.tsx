@@ -48,7 +48,8 @@ export function ProjectDialog({
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState<ProjectStatus>(ProjectStatus.ACTIVE);
+  const [status, setStatus] = useState<ProjectStatus>(ProjectStatus.PLANNING);
+  const [deadline, setDeadline] = useState<string>("");
   const [color, setColor] = useState<string>(DEFAULT_PROJECT_COLOR);
 
   // Reset the form whenever the dialog opens for a different project.
@@ -56,13 +57,16 @@ export function ProjectDialog({
     if (!open) return;
     setName(project?.name ?? "");
     setDescription(project?.description ?? "");
-    setStatus(project?.status ?? ProjectStatus.ACTIVE);
+    setStatus(project?.status ?? ProjectStatus.PLANNING);
+    setDeadline(
+      project?.deadline ? project.deadline.toISOString().slice(0, 10) : "",
+    );
     setColor(project?.color ?? DEFAULT_PROJECT_COLOR);
   }, [open, project]);
 
   function submit() {
     start(async () => {
-      const payload = { name, description, status, color };
+      const payload = { name, description, status, deadline, color };
       const res = isEdit
         ? await updateProject({ ...payload, id: project!.id })
         : await createProject(payload);
@@ -136,24 +140,34 @@ export function ProjectDialog({
             </div>
 
             <div className="space-y-2">
-              <Label>Цвет</Label>
-              <div className="flex flex-wrap gap-2 pt-1">
-                {PROJECT_COLORS.map((c) => (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => setColor(c)}
-                    aria-label={`Цвет ${c}`}
-                    className={cn(
-                      "size-6 rounded-full border-2 transition-transform",
-                      color === c
-                        ? "scale-110 border-foreground"
-                        : "border-transparent hover:scale-110",
-                    )}
-                    style={{ backgroundColor: c }}
-                  />
-                ))}
-              </div>
+              <Label htmlFor="project-deadline">Дедлайн</Label>
+              <Input
+                id="project-deadline"
+                type="date"
+                value={deadline}
+                onChange={(e) => setDeadline(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Цвет</Label>
+            <div className="flex flex-wrap gap-2 pt-1">
+              {PROJECT_COLORS.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setColor(c)}
+                  aria-label={`Цвет ${c}`}
+                  className={cn(
+                    "size-6 rounded-full border-2 transition-transform",
+                    color === c
+                      ? "scale-110 border-foreground"
+                      : "border-transparent hover:scale-110",
+                  )}
+                  style={{ backgroundColor: c }}
+                />
+              ))}
             </div>
           </div>
         </div>
