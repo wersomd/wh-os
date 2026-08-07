@@ -21,7 +21,7 @@ export async function getProjects() {
 export type ProjectWithProgress = Awaited<ReturnType<typeof getProjects>>[number];
 
 // Top N non-terminal projects (excludes DONE/ARCHIVED), ranked by urgency —
-// used by the /projects page's default view and the Dashboard widget.
+// used by the Dashboard's "Горящие проекты" widget.
 export async function getHotProjects(limit = 4): Promise<ProjectWithProgress[]> {
   const projects = await getProjects();
   const active = projects.filter(

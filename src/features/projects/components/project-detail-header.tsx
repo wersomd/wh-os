@@ -26,11 +26,9 @@ import { ProjectDialog } from "./project-dialog";
 
 export function ProjectDetailHeader({
   project,
-  taskCount,
   progress,
 }: {
   project: Project;
-  taskCount: number;
   progress: ProjectProgress;
 }) {
   const router = useRouter();

@@ -44,7 +44,6 @@ export default async function ProjectDetailPage({
 
       <ProjectDetailHeader
         project={project}
-        taskCount={tasks.length}
         progress={computeProjectProgress(tasks)}
       />
 
