@@ -9,6 +9,7 @@ import {
   CheckSquare,
   CreditCard,
   Flame,
+  FolderKanban,
   HandCoins,
   Pin,
   Target,
@@ -20,6 +21,8 @@ import { AnimatedIn } from "@/components/shared/animated-in";
 import { DashboardTasks } from "@/features/dashboard/components/dashboard-tasks";
 import { TodayFocus } from "@/features/dashboard/components/today-focus";
 import { FinancePulse } from "@/features/dashboard/components/finance-pulse";
+import { HotProjects } from "@/features/dashboard/components/hot-projects";
+import { getHotProjects } from "@/features/projects/queries";
 import { SavingsInsightCard } from "@/features/finances/components/savings-insight-card";
 import { DEFAULT_HABIT_COLOR } from "@/features/habits/constants";
 import { formatMoney } from "@/features/finances/money";
@@ -102,6 +105,7 @@ export default async function DashboardPage() {
   const s = await getDashboardSummary();
   const today = await getTodayFocus();
   const pulse = await getFinancePulse();
+  const hotProjects = await getHotProjects();
   const now = new Date();
   const currencies = Object.entries(s.balances);
   const debtCurrencies = Object.entries(s.debts.totals);
@@ -273,8 +277,8 @@ export default async function DashboardPage() {
         </AnimatedIn>
       </div>
 
-      {/* Habits + Goals */}
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
+      {/* Habits + Goals + Projects */}
+      <div className="mt-5 grid gap-5 lg:grid-cols-3">
         <AnimatedIn delay={0.32}>
           <Panel title="Привычки" href="/habits" icon={Flame} accent="amber">
             {s.habits.list.length === 0 ? (
@@ -335,11 +339,17 @@ export default async function DashboardPage() {
             )}
           </Panel>
         </AnimatedIn>
+
+        <AnimatedIn delay={0.4}>
+          <Panel title="Горящие проекты" href="/projects" icon={FolderKanban} accent="violet">
+            <HotProjects projects={hotProjects} />
+          </Panel>
+        </AnimatedIn>
       </div>
 
       {/* Subscriptions + Finance */}
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
-        <AnimatedIn delay={0.4}>
+        <AnimatedIn delay={0.44}>
           <Panel title="Ближайшие платежи" href="/subscriptions" icon={CreditCard} accent="sky">
             {s.subscriptions.length === 0 ? (
               <Empty text="Нет платежей в ближайшие 7 дней." />
@@ -366,7 +376,7 @@ export default async function DashboardPage() {
           </Panel>
         </AnimatedIn>
 
-        <AnimatedIn delay={0.44}>
+        <AnimatedIn delay={0.48}>
           <Panel title="Финансы (этот месяц)" href="/finances" icon={Wallet} accent="emerald">
             {s.financeThisMonth.income === 0 && s.financeThisMonth.expense === 0 ? (
               <Empty text="Нет транзакций за этот месяц." />
@@ -410,7 +420,7 @@ export default async function DashboardPage() {
 
       {/* Debts */}
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
-        <AnimatedIn delay={0.48}>
+        <AnimatedIn delay={0.52}>
           <Panel title="Долги" href="/debts" icon={HandCoins} accent="rose">
             {debtCurrencies.length === 0 ? (
               <Empty text="Нет открытых долгов." />
@@ -454,7 +464,7 @@ export default async function DashboardPage() {
         </AnimatedIn>
       </div>
 
-      <AnimatedIn delay={0.52} className="mt-5">
+      <AnimatedIn delay={0.56} className="mt-5">
         <SavingsInsightCard insights={s.insights} accounts={s.accounts} />
       </AnimatedIn>
 
