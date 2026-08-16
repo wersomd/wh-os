@@ -1,4 +1,4 @@
-# Wediff — project guide
+# jinsei-os — project guide
 
 Single-user personal "Life OS" (private Notion replacement). Built in phases 0→7.
 
@@ -38,7 +38,8 @@ DB runs locally in Docker, not Supabase (dev). `docker-compose.yml`:
 ## Conventions
 - Data via Server Components (read) + Server Actions (write), validated with Zod.
 - Money: `Decimal(14,2)`, never float. Default currency KZT, USD also supported (per-account).
-- Dark-first; one electric-violet accent as a CSS variable.
+- Bold minimalism: stark achromatic base (true black/white) + one high-chroma
+  electric-violet accent, both light and dark themes as CSS variables (user-toggleable).
 
 ## Windows path-casing gotcha
 The real folder is `D:\Projects\wediff` (capital P). If tooling ever resolves the path

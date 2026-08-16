@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
-import { BookOpen, CheckSquare, Flame, Heart, Target, Wallet } from "lucide-react";
+import { BookOpen, CheckSquare, FolderKanban, Heart, Target, Wallet } from "lucide-react";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },
@@ -17,7 +17,7 @@ const stagger: Variants = {
 const FEATURES = [
   { icon: Wallet,      name: "Финансы",  desc: "Счета, транзакции, аналитика расходов", accent: "emerald" as const },
   { icon: CheckSquare, name: "Задачи",   desc: "Канбан и приоритеты",                   accent: "violet"  as const },
-  { icon: Flame,       name: "Привычки", desc: "Стрики и ежедневный прогресс",          accent: "amber"   as const },
+  { icon: FolderKanban,name: "Проекты",  desc: "Прогресс, дедлайны, статусы",           accent: "amber"   as const },
   { icon: Target,      name: "Цели",     desc: "OKR и ключевые результаты",             accent: "fuchsia" as const },
   { icon: BookOpen,    name: "Дневник",  desc: "Настроение и рефлексия",                accent: "sky"     as const },
   { icon: Heart,       name: "Здоровье", desc: "Метрики и логи",                        accent: "rose"    as const },
@@ -70,7 +70,7 @@ function DashboardMockup() {
       <text x="24" y="42" fill="#a78bfa" fontSize="20" fontWeight="700" fontFamily="system-ui,sans-serif">
         JinseiOS
       </text>
-      {(["Дашборд", "Финансы", "Задачи", "Привычки", "Цели", "Дневник", "Здоровье"] as const).map(
+      {(["Дашборд", "Проекты", "Финансы", "Задачи", "Цели", "Дневник", "Здоровье"] as const).map(
         (label, i) => (
           <g key={label}>
             {i === 0 && (
@@ -101,7 +101,7 @@ function DashboardMockup() {
         [
           { label: "Баланс KZT",      val: "₸ 450 000", color: "#34d399" },
           { label: "Задачи открытых", val: "12",         color: "#818cf8" },
-          { label: "Привычки",        val: "4 / 6",      color: "#fbbf24" },
+          { label: "Проекты активн.", val: "5",          color: "#fbbf24" },
           { label: "Расходы (месяц)", val: "₸ 82 400",   color: "#f87171" },
         ] as const
       ).map((c, i) => (
@@ -179,17 +179,17 @@ function DashboardMockup() {
         />
       ))}
 
-      {/* Habits */}
+      {/* Projects */}
       <rect x="240" y="432" width="490" height="188" rx="10" fill="#18181f" stroke="rgba(255,255,255,0.07)" strokeWidth="1" />
       <text x="260" y="460" fill="#e5e7eb" fontSize="13" fontWeight="600" fontFamily="system-ui,sans-serif">
-        Привычки
+        Горящие проекты
       </text>
       {(
         [
-          { name: "Спорт",     width: 280, color: "#34d399" },
-          { name: "Чтение",    width: 190, color: "#fbbf24" },
-          { name: "Медитация", width: 330, color: "#818cf8" },
-          { name: "Вода",      width: 210, color: "#22d3ee" },
+          { name: "Редизайн сайта",      width: 280, color: "#34d399" },
+          { name: "Ремонт кухни",        width: 190, color: "#fbbf24" },
+          { name: "Курс английского",    width: 330, color: "#818cf8" },
+          { name: "Бюджет на отпуск",    width: 210, color: "#22d3ee" },
         ] as const
       ).map((h, i) => (
         <g key={h.name}>
@@ -251,7 +251,7 @@ export function LandingClient() {
           transition={{ delay: 0.15 }}
           className="mt-6 max-w-xl text-lg text-muted-foreground"
         >
-          Финансы, задачи, привычки, цели — всё под контролем.
+          Финансы, задачи и проекты — всё под контролем.
         </motion.p>
 
         <motion.div

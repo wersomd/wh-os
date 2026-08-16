@@ -8,7 +8,6 @@ import {
   CalendarRange,
   CheckSquare,
   CreditCard,
-  Flame,
   FolderKanban,
   HandCoins,
   Pin,
@@ -24,7 +23,6 @@ import { FinancePulse } from "@/features/dashboard/components/finance-pulse";
 import { HotProjects } from "@/features/dashboard/components/hot-projects";
 import { getHotProjects } from "@/features/projects/queries";
 import { SavingsInsightCard } from "@/features/finances/components/savings-insight-card";
-import { DEFAULT_HABIT_COLOR } from "@/features/habits/constants";
 import { formatMoney } from "@/features/finances/money";
 import { MOOD_EMOJI, MOOD_LABEL } from "@/features/journal/constants";
 import { getDashboardSummary, getFinancePulse, getTodayFocus } from "@/features/dashboard/queries";
@@ -115,7 +113,7 @@ export default async function DashboardPage() {
       {/* Greeting hero */}
       <div className="mb-6 flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight">
             {greeting(now.getHours())} 👋
           </h1>
           <p className="mt-1 text-sm text-muted-foreground first-letter:uppercase">
@@ -134,16 +132,19 @@ export default async function DashboardPage() {
         )}
       </div>
 
+      {/* Projects — leads the dashboard */}
       <AnimatedIn delay={0} className="mb-6">
-        <DashboardCalendarWidget month={s.calendarMonth.month} items={s.calendarMonth.items} />
+        <Panel title="Горящие проекты" href="/projects" icon={FolderKanban} accent="violet">
+          <HotProjects projects={hotProjects} />
+        </Panel>
       </AnimatedIn>
 
-      <div className="mb-6">
+      <AnimatedIn delay={0.04} className="mb-6">
         <TodayFocus items={today} />
-      </div>
+      </AnimatedIn>
 
-      {/* Key numbers — Долги replaced with Расходы (месяц) */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+      {/* Key numbers */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
         <AnimatedIn delay={0}>
           <StatCard
             href="/tasks"
@@ -155,16 +156,6 @@ export default async function DashboardPage() {
           />
         </AnimatedIn>
         <AnimatedIn delay={0.04}>
-          <StatCard
-            href="/habits"
-            accent="amber"
-            icon={Flame}
-            label="Привычки"
-            value={s.habits.total ? `${s.habits.doneToday}/${s.habits.total}` : "—"}
-            hint="отмечено за сегодня"
-          />
-        </AnimatedIn>
-        <AnimatedIn delay={0.08}>
           <StatCard
             href="/finances"
             accent="emerald"
@@ -182,7 +173,7 @@ export default async function DashboardPage() {
             }
           />
         </AnimatedIn>
-        <AnimatedIn delay={0.12}>
+        <AnimatedIn delay={0.08}>
           <StatCard
             href="/finances"
             accent="rose"
@@ -200,7 +191,7 @@ export default async function DashboardPage() {
             }
           />
         </AnimatedIn>
-        <AnimatedIn delay={0.16}>
+        <AnimatedIn delay={0.12}>
           <StatCard
             href="/goals"
             accent="fuchsia"
@@ -210,7 +201,7 @@ export default async function DashboardPage() {
             hint="в работе"
           />
         </AnimatedIn>
-        <AnimatedIn delay={0.2}>
+        <AnimatedIn delay={0.16}>
           <StatCard
             href="/subscriptions"
             accent="sky"
@@ -222,13 +213,26 @@ export default async function DashboardPage() {
         </AnimatedIn>
       </div>
 
-      <AnimatedIn delay={0.22} className="mt-5">
+      <AnimatedIn delay={0.2} className="mt-5">
         <FinancePulse data={pulse} />
       </AnimatedIn>
 
-      {/* Ближайшее + Tasks */}
+      {/* Calendar + Tasks */}
       <div className="mt-6 grid gap-5 lg:grid-cols-3">
         <AnimatedIn delay={0.24} className="lg:col-span-2">
+          <DashboardCalendarWidget month={s.calendarMonth.month} items={s.calendarMonth.items} />
+        </AnimatedIn>
+
+        <AnimatedIn delay={0.28}>
+          <Panel title="Задачи на сегодня" href="/tasks" icon={CheckSquare} accent="violet">
+            <DashboardTasks tasks={s.tasks.due} />
+          </Panel>
+        </AnimatedIn>
+      </div>
+
+      {/* Upcoming + Goals */}
+      <div className="mt-5 grid gap-5 lg:grid-cols-3">
+        <AnimatedIn delay={0.32} className="lg:col-span-2">
           <Panel title="Ближайшее" href="/calendar" icon={CalendarRange} accent="sky">
             {s.upcoming.length === 0 ? (
               <Empty text="На ближайшие 30 дней ничего не запланировано." />
@@ -270,49 +274,6 @@ export default async function DashboardPage() {
           </Panel>
         </AnimatedIn>
 
-        <AnimatedIn delay={0.28}>
-          <Panel title="Задачи на сегодня" href="/tasks" icon={CheckSquare} accent="violet">
-            <DashboardTasks tasks={s.tasks.due} />
-          </Panel>
-        </AnimatedIn>
-      </div>
-
-      {/* Habits + Goals + Projects */}
-      <div className="mt-5 grid gap-5 lg:grid-cols-3">
-        <AnimatedIn delay={0.32}>
-          <Panel title="Привычки" href="/habits" icon={Flame} accent="amber">
-            {s.habits.list.length === 0 ? (
-              <Empty text="Привычек пока нет. Заведите первую." />
-            ) : (
-              <ul className="space-y-3 pt-1">
-                {s.habits.list.map((h) => {
-                  const color = h.color ?? DEFAULT_HABIT_COLOR;
-                  const pct = Math.round((h.weekDone / 7) * 100);
-                  return (
-                    <li key={h.id}>
-                      <div className="mb-1 flex items-center justify-between gap-2 text-sm">
-                        <span className="flex min-w-0 items-center gap-2">
-                          {h.icon && <span className="shrink-0">{h.icon}</span>}
-                          <span className="truncate">{h.name}</span>
-                        </span>
-                        <span className="shrink-0 tabular-nums text-muted-foreground">
-                          {h.weekDone}/7
-                        </span>
-                      </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                        <div
-                          className="h-full rounded-full transition-all"
-                          style={{ width: `${pct}%`, backgroundColor: color }}
-                        />
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </Panel>
-        </AnimatedIn>
-
         <AnimatedIn delay={0.36}>
           <Panel title="Цели" href="/goals" icon={Target} accent="fuchsia">
             {s.goals.length === 0 ? (
@@ -339,17 +300,11 @@ export default async function DashboardPage() {
             )}
           </Panel>
         </AnimatedIn>
-
-        <AnimatedIn delay={0.4}>
-          <Panel title="Горящие проекты" href="/projects" icon={FolderKanban} accent="violet">
-            <HotProjects projects={hotProjects} />
-          </Panel>
-        </AnimatedIn>
       </div>
 
       {/* Subscriptions + Finance */}
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
-        <AnimatedIn delay={0.44}>
+        <AnimatedIn delay={0.4}>
           <Panel title="Ближайшие платежи" href="/subscriptions" icon={CreditCard} accent="sky">
             {s.subscriptions.length === 0 ? (
               <Empty text="Нет платежей в ближайшие 7 дней." />
@@ -376,7 +331,7 @@ export default async function DashboardPage() {
           </Panel>
         </AnimatedIn>
 
-        <AnimatedIn delay={0.48}>
+        <AnimatedIn delay={0.44}>
           <Panel title="Финансы (этот месяц)" href="/finances" icon={Wallet} accent="emerald">
             {s.financeThisMonth.income === 0 && s.financeThisMonth.expense === 0 ? (
               <Empty text="Нет транзакций за этот месяц." />
@@ -420,7 +375,7 @@ export default async function DashboardPage() {
 
       {/* Debts */}
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
-        <AnimatedIn delay={0.52}>
+        <AnimatedIn delay={0.48}>
           <Panel title="Долги" href="/debts" icon={HandCoins} accent="rose">
             {debtCurrencies.length === 0 ? (
               <Empty text="Нет открытых долгов." />
@@ -464,7 +419,7 @@ export default async function DashboardPage() {
         </AnimatedIn>
       </div>
 
-      <AnimatedIn delay={0.56} className="mt-5">
+      <AnimatedIn delay={0.52} className="mt-5">
         <SavingsInsightCard insights={s.insights} accounts={s.accounts} />
       </AnimatedIn>
 
@@ -522,7 +477,7 @@ function StatCard({
     <Link
       href={href}
       className={cn(
-        "block rounded-xl border border-border border-l-2 bg-card p-4 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md",
+        "block rounded-xl border border-border border-l-2 bg-card p-4 transition-all duration-150 hover:-translate-y-0.5",
         a.bar, a.ring,
       )}
     >
@@ -531,7 +486,7 @@ function StatCard({
           <Icon className="size-4" />
         </span>
       </div>
-      <p className="mt-3 truncate text-2xl font-semibold tabular-nums">{value}</p>
+      <p className="mt-3 truncate text-3xl font-bold tabular-nums">{value}</p>
       <p className="mt-0.5 truncate text-xs text-muted-foreground">{label}</p>
       <p className={cn("mt-1 truncate text-xs", alert ? "font-medium text-destructive" : "text-muted-foreground/70")}>
         {hint}
@@ -554,13 +509,13 @@ function Panel({
   return (
     <div className={cn("rounded-xl border border-border bg-card p-5", className)}>
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="flex items-center gap-2 font-medium">
+        <h2 className="flex items-center gap-2 font-semibold">
           <span className={cn("flex size-6 items-center justify-center rounded-md", a.chip)}>
             <Icon className="size-3.5" />
           </span>
           {title}
         </h2>
-        <Link href={href} className="text-xs text-primary hover:underline">
+        <Link href={href} className="text-xs font-medium text-primary hover:underline">
           Открыть
         </Link>
       </div>

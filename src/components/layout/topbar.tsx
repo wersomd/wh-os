@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { SidebarNav } from "./sidebar";
 import { AccountMenu } from "./account-menu";
+import { ThemeToggle } from "./theme-toggle";
 import BrandMark from "@/components/shared/brand-mark";
 
 export function Topbar({
@@ -27,7 +28,7 @@ export function Topbar({
         <BrandMark withWordmark className="md:hidden" />
 
         <div className="ml-auto flex items-center gap-2">
-          {/* Theme toggle lands in Phase 7 */}
+          <ThemeToggle />
           <AccountMenu user={user} />
         </div>
       </header>

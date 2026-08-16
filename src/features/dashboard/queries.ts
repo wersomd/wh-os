@@ -1,5 +1,5 @@
 import "server-only";
-import { addDays, endOfDay, endOfMonth, format, startOfDay, startOfMonth, startOfWeek } from "date-fns";
+import { addDays, endOfDay, endOfMonth, format, startOfDay, startOfMonth } from "date-fns";
 import { DebtStatus, GoalStatus, TaskStatus, TransactionType } from "@prisma/client";
 import { db } from "@/lib/db";
 import {
@@ -10,7 +10,6 @@ import {
 import { computeDebtTotals, isOverdue } from "@/features/debts/summary";
 import { getDebtsView } from "@/features/debts/queries";
 import { getCalendarItems, getUpcomingItems } from "@/features/calendar/queries";
-import { entryDayKey, todayKey, weekCount } from "@/features/habits/dates";
 import { buildTodayFocus, type FocusItem } from "./lib/today-focus";
 import { computeFinancePulse, type FinancePulse } from "./lib/finance-pulse";
 
@@ -19,13 +18,11 @@ export async function getDashboardSummary() {
   const endToday = endOfDay(now);
   const todayDateKey = format(now, "yyyy-MM-dd");
   const todayDate = new Date(`${todayDateKey}T00:00:00.000Z`);
-  const weekStart = startOfWeek(now, { weekStartsOn: 1 });
   const in7 = endOfDay(addDays(now, 7));
 
   const [
     dueTasks,
     openTaskCount,
-    habits,
     accounts,
     upcomingSubs,
     pinnedNotes,
@@ -49,15 +46,6 @@ export async function getDashboardSummary() {
     }),
     db.task.count({
       where: { status: { in: [TaskStatus.TODO, TaskStatus.IN_PROGRESS] } },
-    }),
-    // Active habits with this week's entries — enough for today's done/total
-    // and the per-habit weekly progress panel.
-    db.habit.findMany({
-      where: { archived: false },
-      orderBy: { createdAt: "asc" },
-      include: {
-        entries: { where: { date: { gte: weekStart } }, select: { date: true } },
-      },
     }),
     getAccountsWithBalance(),
     db.subscription.findMany({
@@ -157,20 +145,6 @@ export async function getDashboardSummary() {
       })),
       openCount: openTaskCount,
     },
-    habits: {
-      doneToday: habits.filter((h) =>
-        h.entries.some((e) => entryDayKey(e.date) === todayKey()),
-      ).length,
-      total: habits.length,
-      list: habits.slice(0, 6).map((h) => ({
-        id: h.id,
-        name: h.name,
-        color: h.color,
-        icon: h.icon,
-        weekDone: weekCount(new Set(h.entries.map((e) => entryDayKey(e.date)))),
-        target: h.target,
-      })),
-    },
     balances,
     subscriptions: upcomingSubs.map((s) => ({
       id: s.id,
@@ -200,23 +174,11 @@ export type DashboardSummary = Awaited<ReturnType<typeof getDashboardSummary>>;
 
 export async function getTodayFocus(): Promise<FocusItem[]> {
   const now = new Date();
-  const [tasks, habits, todayEntries] = await Promise.all([
-    db.task.findMany({
-      where: { completedAt: null, dueDate: { gte: startOfDay(now), lte: endOfDay(now) } },
-      select: { id: true, title: true, dueDate: true, completedAt: true },
-    }),
-    db.habit.findMany({ where: { archived: false }, select: { id: true, name: true } }),
-    db.habitEntry.findMany({
-      where: { date: { gte: startOfDay(now), lte: endOfDay(now) } },
-      select: { habitId: true },
-    }),
-  ]);
-  return buildTodayFocus({
-    tasks,
-    habits,
-    doneHabitIds: todayEntries.map((e) => e.habitId),
-    now,
+  const tasks = await db.task.findMany({
+    where: { completedAt: null, dueDate: { gte: startOfDay(now), lte: endOfDay(now) } },
+    select: { id: true, title: true, dueDate: true, completedAt: true },
   });
+  return buildTodayFocus({ tasks, now });
 }
 
 // Finance pulse widget: this month's budget spend, a 30-day expense
