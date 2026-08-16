@@ -1,4 +1,4 @@
-// Wediff — single-user personal Life OS.
+// jinsei-os — single-user personal Life OS.
 // Design note: single-user, so domain tables intentionally carry NO `userId`.
 // The single `User` row exists only for login / 2FA. Add tenancy via migration
 // later if multi-user is ever needed.
@@ -99,37 +99,6 @@ model Task {
   @@index([status])
   @@index([projectId])
   @@index([dueDate])
-}
-
-// ─────────────────────────── HABITS ───────────────────────────
-enum HabitFrequency {
-  DAILY
-  WEEKLY
-}
-
-model Habit {
-  id          String         @id @default(cuid())
-  name        String
-  description String?
-  color       String?
-  icon        String?
-  frequency   HabitFrequency @default(DAILY)
-  target      Int            @default(1) // times per period (e.g. 3x/week)
-  archived    Boolean        @default(false)
-  createdAt   DateTime       @default(now())
-  entries     HabitEntry[]
-}
-
-model HabitEntry {
-  id      String   @id @default(cuid())
-  habitId String
-  habit   Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
-  date    DateTime @db.Date // one mark per day
-  count   Int      @default(1)
-  note    String?
-
-  @@unique([habitId, date]) // can't mark a habit twice the same day
-  @@index([date])
 }
 
 // ─────────────────────────── FINANCES ───────────────────────────

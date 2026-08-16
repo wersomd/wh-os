@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckSquare, Repeat, Sun } from "lucide-react";
+import { CheckSquare, Sun } from "lucide-react";
 import type { FocusItem } from "../lib/today-focus";
 
 export function TodayFocus({ items }: { items: FocusItem[] }) {
@@ -18,11 +18,7 @@ export function TodayFocus({ items }: { items: FocusItem[] }) {
                 href={it.href}
                 className="flex items-center gap-3 rounded-lg px-2 py-2 text-base transition-colors hover:bg-muted"
               >
-                {it.kind === "task" ? (
-                  <CheckSquare className="size-4 text-primary" />
-                ) : (
-                  <Repeat className="size-4 text-primary" />
-                )}
+                <CheckSquare className="size-4 text-primary" />
                 <span className="truncate">{it.title}</span>
               </Link>
             </li>
