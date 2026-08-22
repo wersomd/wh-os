@@ -1,7 +1,7 @@
 # JinseiOS: solid minimalism redesign and Kaspi-style finance categories
 
 Date: 2026-08-22
-Status: proposed
+Status: approved
 
 ## Goal
 
@@ -27,6 +27,9 @@ Kaspi Gold spending.
    ordinary spending.
 5. Dark is first-class. Both themes use the same hierarchy and interaction
    rules, not a recolored light interface.
+6. Apple-inspired restraint. This is not a visual copy of Apple software. It
+   borrows its practical qualities: generous but purposeful whitespace, soft
+   surface contrast, clear typography, and low-noise controls.
 
 ## Visual system
 
@@ -49,6 +52,12 @@ The electric-violet primary and ring values are removed. Corner radius is 6px
 for controls and 8px for dialogs and compact cards. Numeric amounts use
 `tabular-nums`. There are no gradients, decorative glows, large colored
 surfaces, or animated background effects.
+
+The light theme is white-first, with near-white secondary surfaces. The dark
+theme uses graphite rather than pure black to preserve hierarchy. Typography is
+system-like: modest heading scale, medium emphasis only where it establishes
+hierarchy, and no aggressive tracking. Motion is short, quiet, and only
+supports a direct interaction.
 
 ### Application shell
 
