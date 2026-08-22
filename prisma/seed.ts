@@ -1,35 +1,29 @@
-import { PrismaClient, TransactionType, AccountType } from "@prisma/client";
+import { PrismaClient, TransactionType, AccountType, CategoryKind } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { FINANCE_CATEGORY_PRESETS } from "../src/features/finances/constants";
 
 const db = new PrismaClient();
 
-const expenseCategories = [
-  "Groceries",
-  "Eating out",
-  "Transport",
-  "Housing",
-  "Health",
-  "Entertainment",
-  "Shopping",
-  "Other",
-];
-
-const incomeCategories = ["Salary", "Freelance", "Gifts", "Other"];
-
 async function main() {
-  for (const name of expenseCategories) {
+  for (const category of FINANCE_CATEGORY_PRESETS) {
     await db.category.upsert({
-      where: { name_type: { name, type: TransactionType.EXPENSE } },
-      update: {},
-      create: { name, type: TransactionType.EXPENSE },
-    });
-  }
-
-  for (const name of incomeCategories) {
-    await db.category.upsert({
-      where: { name_type: { name, type: TransactionType.INCOME } },
-      update: {},
-      create: { name, type: TransactionType.INCOME },
+      where: {
+        name_type: { name: category.name, type: category.type as TransactionType },
+      },
+      update: {
+        group: category.group,
+        icon: category.icon,
+        color: category.color,
+        kind: CategoryKind.PRESET,
+      },
+      create: {
+        name: category.name,
+        type: category.type as TransactionType,
+        group: category.group,
+        icon: category.icon,
+        color: category.color,
+        kind: CategoryKind.PRESET,
+      },
     });
   }
 
