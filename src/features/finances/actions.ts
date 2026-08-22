@@ -14,6 +14,7 @@ import {
   transactionUpdateSchema,
   transferSchema,
 } from "./schema";
+import { validateCategoryType } from "./schema";
 import { Prisma, TransactionType } from "@prisma/client";
 
 // Service category for the paired transactions of an account-to-account
@@ -85,16 +86,17 @@ export async function setAccountArchived(
 
 // ── Transactions ────────────────────────────────────────────────────────────
 async function resolveCategoryId(
-  name: string | null,
+  categoryId: string,
   type: TransactionType,
-): Promise<string | null> {
-  if (!name) return null;
-  const cat = await db.category.upsert({
-    where: { name_type: { name, type } },
-    create: { name, type },
-    update: {},
+): Promise<{ id: string } | { error: string }> {
+  const category = await db.category.findUnique({
+    where: { id: categoryId },
+    select: { id: true, type: true, active: true },
   });
-  return cat.id;
+  if (!category) return { error: "Категория не найдена" };
+  if (!category.active) return { error: "Категория скрыта" };
+  const valid = validateCategoryType(type, category.type);
+  return "error" in valid ? valid : { id: category.id };
 }
 
 export async function createTransaction(input: unknown): Promise<ActionResult> {
@@ -103,15 +105,16 @@ export async function createTransaction(input: unknown): Promise<ActionResult> {
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Проверьте поля" };
   }
-  const { type, amount, date, accountId, category, note } = parsed.data;
-  const categoryId = await resolveCategoryId(clean(category), type);
+  const { type, amount, date, accountId, categoryId, note } = parsed.data;
+  const category = await resolveCategoryId(categoryId, type);
+  if ("error" in category) return category;
   await db.transaction.create({
     data: {
       type,
       amount,
       date: new Date(`${date}T00:00:00.000Z`),
       accountId,
-      categoryId,
+      categoryId: category.id,
       note: clean(note),
     },
   });
@@ -125,8 +128,9 @@ export async function updateTransaction(input: unknown): Promise<ActionResult> {
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Проверьте поля" };
   }
-  const { id, type, amount, date, accountId, category, note } = parsed.data;
-  const categoryId = await resolveCategoryId(clean(category), type);
+  const { id, type, amount, date, accountId, categoryId, note } = parsed.data;
+  const category = await resolveCategoryId(categoryId, type);
+  if ("error" in category) return category;
   await db.transaction.update({
     where: { id },
     data: {
@@ -134,7 +138,7 @@ export async function updateTransaction(input: unknown): Promise<ActionResult> {
       amount,
       date: new Date(`${date}T00:00:00.000Z`),
       accountId,
-      categoryId,
+      categoryId: category.id,
       note: clean(note),
     },
   });

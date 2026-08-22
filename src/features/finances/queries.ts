@@ -48,7 +48,7 @@ export async function getTransactions() {
     take: 500,
     include: {
       account: { select: { id: true, name: true, currency: true } },
-      category: { select: { id: true, name: true, color: true } },
+      category: { select: { id: true, name: true, color: true, icon: true } },
     },
   });
   return rows.map((t) => ({
@@ -67,7 +67,7 @@ export type TransactionRow = Awaited<ReturnType<typeof getTransactions>>[number]
 export async function getCategories() {
   return db.category.findMany({
     orderBy: { name: "asc" },
-    select: { id: true, name: true, type: true, color: true },
+    select: { id: true, name: true, type: true, color: true, icon: true, group: true, active: true, kind: true },
   });
 }
 
@@ -81,6 +81,10 @@ export async function getCategoriesWithCount() {
       name: true,
       type: true,
       color: true,
+      icon: true,
+      group: true,
+      active: true,
+      kind: true,
       _count: { select: { transactions: true } },
     },
   });

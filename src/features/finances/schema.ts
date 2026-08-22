@@ -1,6 +1,15 @@
 import { z } from "zod";
 import { AccountType, TransactionType } from "@prisma/client";
 
+export function validateCategoryType(
+  transactionType: TransactionType | "EXPENSE" | "INCOME",
+  categoryType: TransactionType | "EXPENSE" | "INCOME",
+): { ok: true } | { error: string } {
+  return transactionType === categoryType
+    ? { ok: true as const }
+    : { error: "Категория не соответствует типу операции" };
+}
+
 export const accountCreateSchema = z.object({
   name: z.string().trim().min(1, "Введите название").max(120),
   type: z.nativeEnum(AccountType).default(AccountType.CARD),
@@ -17,7 +26,7 @@ export const transactionCreateSchema = z.object({
   amount: z.coerce.number().positive("Сумма должна быть больше нуля"),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Некорректная дата"),
   accountId: z.string().min(1, "Выберите счёт"),
-  category: z.string().trim().max(60).optional().or(z.literal("")),
+  categoryId: z.string().min(1, "Выберите категорию"),
   note: z.string().trim().max(500).optional().or(z.literal("")),
 });
 
