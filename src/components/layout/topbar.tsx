@@ -16,11 +16,11 @@ export function Topbar({
 
   return (
     <>
-      <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur md:px-8">
+      <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur md:px-8">
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="-ml-1 flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground md:hidden"
+          className="-ml-1 flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground md:hidden"
           aria-label="Открыть меню"
         >
           <Menu className="size-5" />
@@ -40,11 +40,11 @@ export function Topbar({
             className="absolute inset-0 bg-black/60"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute left-0 top-0 h-full w-64 border-r border-border bg-card">
+          <div className="absolute left-0 top-0 h-full w-64 border-r border-border bg-background">
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="absolute right-2 top-3 flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              className="absolute right-2 top-3 flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               aria-label="Закрыть меню"
             >
               <X className="size-5" />

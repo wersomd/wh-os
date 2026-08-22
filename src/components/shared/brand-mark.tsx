@@ -11,12 +11,12 @@ export default function BrandMark({
     <span className={cn("inline-flex items-center gap-2", className)}>
       <span
         aria-hidden
-        className="flex size-8 items-center justify-center rounded-lg bg-primary/15 text-base font-semibold leading-none text-primary"
+        className="flex size-8 items-center justify-center rounded-md bg-primary text-base font-medium leading-none text-primary-foreground"
       >
         人生
       </span>
       {withWordmark && (
-        <span className="text-lg font-semibold tracking-tight">JinseiOS</span>
+        <span className="text-lg font-medium">JinseiOS</span>
       )}
     </span>
   );
