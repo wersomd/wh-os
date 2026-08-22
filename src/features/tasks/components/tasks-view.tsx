@@ -13,7 +13,7 @@ import { TaskDialog } from "./task-dialog";
 import { ViewSwitcher, type TaskView } from "./view-switcher";
 import { TaskFilters } from "./task-filters";
 import { createTask, moveTask, toggleDone } from "../actions";
-import { ALL, TASK_STATUS_ORDER, type TaskFiltersState } from "../constants";
+import { ALL, DEFAULT_TASK_VIEW, TASK_STATUS_ORDER, type TaskFiltersState } from "../constants";
 import type { ProjectOption, TaskWithProject } from "../queries";
 
 const EMPTY_FILTERS: TaskFiltersState = {
@@ -67,7 +67,7 @@ export function TasksView({
 }) {
   const router = useRouter();
   const [, start] = useTransition();
-  const [view, setView] = useState<TaskView>("board");
+  const [view, setView] = useState<TaskView>(DEFAULT_TASK_VIEW);
   const [columns, setColumns] = useState<Columns>(() =>
     groupByStatus(initialTasks),
   );

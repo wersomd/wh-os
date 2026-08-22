@@ -24,7 +24,7 @@ export function TransactionList({
   onDelete: (t: TransactionRow) => void;
 }) {
   return (
-    <div className="rounded-xl border border-border">
+    <div className="rounded-lg border border-border">
       {transactions.map((t) => {
         const income = t.type === TransactionType.INCOME;
         return (

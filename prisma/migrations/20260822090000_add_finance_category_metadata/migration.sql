@@ -1,0 +1,6 @@
+CREATE TYPE "CategoryKind" AS ENUM ('SYSTEM', 'PRESET', 'CUSTOM');
+
+ALTER TABLE "Category"
+  ADD COLUMN "group" TEXT,
+  ADD COLUMN "kind" "CategoryKind" NOT NULL DEFAULT 'CUSTOM',
+  ADD COLUMN "active" BOOLEAN NOT NULL DEFAULT true;

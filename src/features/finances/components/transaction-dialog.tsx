@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -46,14 +46,13 @@ export function TransactionDialog({
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
-  const listId = useId();
   const isEdit = Boolean(transaction);
 
   const [type, setType] = useState<TransactionType>(TransactionType.EXPENSE);
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [accountId, setAccountId] = useState("");
-  const [category, setCategory] = useState("");
+  const [categoryId, setCategoryId] = useState("");
   const [note, setNote] = useState("");
 
   useEffect(() => {
@@ -66,18 +65,18 @@ export function TransactionDialog({
         : format(new Date(), "yyyy-MM-dd"),
     );
     setAccountId(transaction?.account.id ?? accounts[0]?.id ?? "");
-    setCategory(transaction?.category?.name ?? "");
+    setCategoryId(transaction?.category?.id ?? "");
     setNote(transaction?.note ?? "");
   }, [open, transaction, accounts]);
 
   const categoryOptions = useMemo(
-    () => categories.filter((c) => c.type === type).map((c) => c.name),
+    () => categories.filter((c) => c.type === type && c.active),
     [categories, type],
   );
 
   function submit() {
     start(async () => {
-      const payload = { type, amount, date, accountId, category, note };
+      const payload = { type, amount, date, accountId, categoryId, note };
       const res = isEdit
         ? await updateTransaction({ ...payload, id: transaction!.id })
         : await createTransaction(payload);
@@ -163,19 +162,19 @@ export function TransactionDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="tx-category">Категория</Label>
-            <Input
-              id="tx-category"
-              list={listId}
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              placeholder="Например, Продукты"
-            />
-            <datalist id={listId}>
-              {categoryOptions.map((c) => (
-                <option key={c} value={c} />
-              ))}
-            </datalist>
+            <Label>Категория</Label>
+            <Select value={categoryId} onValueChange={setCategoryId}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Выберите категорию" />
+              </SelectTrigger>
+              <SelectContent>
+                {categoryOptions.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
@@ -195,7 +194,7 @@ export function TransactionDialog({
           </Button>
           <Button
             onClick={submit}
-            disabled={pending || !accountId || Number(amount) <= 0}
+            disabled={pending || !accountId || !categoryId || Number(amount) <= 0}
           >
             {isEdit ? "Сохранить" : "Добавить"}
           </Button>
