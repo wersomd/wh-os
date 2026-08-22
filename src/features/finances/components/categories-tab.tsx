@@ -82,11 +82,11 @@ export function CategoriesTab({ categories }: { categories: CategoryWithCount[] 
 
       {/* List */}
       {filtered.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
+        <p className="rounded-lg border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
           Нет категорий. Создайте первую.
         </p>
       ) : (
-        <div className="rounded-xl border border-border">
+        <div className="rounded-lg border border-border">
           {filtered.map((c) => (
             <div
               key={c.id}

@@ -116,7 +116,7 @@ export function DebtsView({
           {Object.entries(totals).map(([currency, t]) => (
             <div
               key={currency}
-              className="rounded-xl border border-border bg-card p-4"
+              className="rounded-lg border border-border bg-card p-4"
             >
               <p className="text-xs text-muted-foreground">
                 Чистый баланс ({currency})
@@ -158,7 +158,7 @@ export function DebtsView({
               />
             ))
           ) : (
-            <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
+            <p className="rounded-lg border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
               Активных долгов нет 🎉
             </p>
           )}
@@ -229,7 +229,7 @@ function CounterpartyCard({
   const totals = computeDebtTotals(counterparty.debts);
 
   return (
-    <div className="rounded-xl border border-border bg-card">
+    <div className="rounded-lg border border-border bg-card">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <h3 className="font-medium">{counterparty.name}</h3>
         <div className="flex flex-wrap justify-end gap-x-3 gap-y-0.5 text-sm tabular-nums">
