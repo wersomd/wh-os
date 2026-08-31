@@ -7,16 +7,18 @@ import { Ban, CalendarClock, CheckCircle2 } from "lucide-react";
 import { TaskStatus } from "@prisma/client";
 import { cn } from "@/lib/utils";
 import { TASK_PRIORITY_STRIPE } from "../constants";
-import { formatDue } from "../format";
+import { formatDue, overdueLabel } from "../format";
 import type { TaskWithProject } from "../queries";
 
 export function TaskCard({
   task,
   onClick,
+  dndDisabled = false,
   overlay = false,
 }: {
   task: TaskWithProject;
   onClick?: () => void;
+  dndDisabled?: boolean;
   overlay?: boolean;
 }) {
   const {
@@ -29,13 +31,14 @@ export function TaskCard({
   } = useSortable({
     id: task.id,
     data: { status: task.status },
+    disabled: dndDisabled,
     transition: { duration: 150, easing: "ease-out" },
   });
 
   const done = task.status === TaskStatus.DONE;
   const cancelled = task.status === TaskStatus.CANCELLED;
   const finished = done || cancelled;
-  const due = task.dueDate ? formatDue(task.dueDate) : null;
+  const due = task.dueDate ? formatDue(task.dueDate, task.status) : null;
 
   return (
     <div
@@ -51,7 +54,10 @@ export function TaskCard({
         whileHover={{ y: -2 }}
         transition={{ duration: 0.15, ease: "easeOut" }}
         className={cn(
-          "group cursor-grab touch-none rounded-md border border-l-[3px] border-border bg-card p-3 text-left transition-colors duration-150 hover:bg-muted/40 active:cursor-grabbing",
+          "group touch-none rounded-md border border-l-[3px] border-border bg-card p-3 text-left transition-colors duration-150 hover:bg-muted/40",
+          dndDisabled
+            ? "cursor-pointer"
+            : "cursor-grab active:cursor-grabbing",
           TASK_PRIORITY_STRIPE[task.priority],
           isDragging && "opacity-40",
           finished && "bg-muted/30",
@@ -84,13 +90,11 @@ export function TaskCard({
               <span
                 className={cn(
                   "inline-flex items-center gap-1 text-xs",
-                  due.overdue && !finished
-                    ? "text-destructive"
-                    : "text-muted-foreground",
+                  due.overdue ? "text-destructive" : "text-muted-foreground",
                 )}
               >
                 <CalendarClock className="size-3" />
-                {due.label}
+                {due.overdue ? overdueLabel(due.overdueDays) : due.label}
               </span>
             )}
             {task.project && (

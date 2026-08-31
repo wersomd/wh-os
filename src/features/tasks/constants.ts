@@ -121,3 +121,25 @@ export type TaskFiltersState = {
   due: string;
   created: string;
 };
+
+// Sort applied within each board column and across the whole list. "manual" is
+// the drag-and-drop order (the stored `order` field); picking anything else
+// disables dragging until the user switches back to manual.
+export const TASK_SORT_ORDER = [
+  "manual",
+  "priority",
+  "due",
+  "created",
+  "title",
+] as const;
+export type TaskSort = (typeof TASK_SORT_ORDER)[number];
+
+export const TASK_SORT_LABELS: Record<TaskSort, string> = {
+  manual: "Вручную",
+  priority: "По приоритету",
+  due: "По сроку",
+  created: "По дате создания",
+  title: "По алфавиту",
+};
+
+export const DEFAULT_TASK_SORT: TaskSort = "manual";

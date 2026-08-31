@@ -44,12 +44,15 @@ const collisionDetection: CollisionDetection = (args) => {
 
 export function Board({
   columns,
+  dndDisabled = false,
   onColumnsChange,
   onMoveEnd,
   onAddTask,
   onCardClick,
 }: {
   columns: Columns;
+  // True while a sort or filter is active — cards render but can't be dragged.
+  dndDisabled?: boolean;
   onColumnsChange: (next: Columns) => void;
   onMoveEnd: (
     taskId: string,
@@ -78,6 +81,7 @@ export function Board({
   }
 
   function handleDragStart(event: DragStartEvent) {
+    if (dndDisabled) return;
     const id = String(event.active.id);
     const status = columnOf(id);
     if (!status) return;
@@ -86,6 +90,7 @@ export function Board({
 
   function handleDragEnd(event: DragEndEvent) {
     setActiveTask(null);
+    if (dndDisabled) return;
     const { active, over } = event;
     if (!over) return;
 
@@ -150,6 +155,7 @@ export function Board({
             key={status}
             status={status}
             tasks={columns[status]}
+            dndDisabled={dndDisabled}
             onAddTask={onAddTask}
             onCardClick={onCardClick}
           />

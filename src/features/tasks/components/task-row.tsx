@@ -5,7 +5,7 @@ import { TaskStatus } from "@prisma/client";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { PriorityDot } from "./priority-badge";
-import { formatDue } from "../format";
+import { formatDue, overdueLabel } from "../format";
 import { TASK_STATUS_LABELS } from "../constants";
 import type { TaskWithProject } from "../queries";
 
@@ -20,7 +20,7 @@ export function TaskRow({
 }) {
   const done = task.status === TaskStatus.DONE;
   const cancelled = task.status === TaskStatus.CANCELLED;
-  const due = task.dueDate ? formatDue(task.dueDate) : null;
+  const due = task.dueDate ? formatDue(task.dueDate, task.status) : null;
 
   return (
     <div className="flex items-center gap-3 border-b border-border px-2 py-2.5 last:border-0 hover:bg-accent/40">
@@ -45,13 +45,11 @@ export function TaskRow({
         <span
           className={cn(
             "hidden items-center gap-1 text-xs sm:inline-flex",
-            due.overdue && !done && !cancelled
-              ? "text-destructive"
-              : "text-muted-foreground",
+            due.overdue ? "text-destructive" : "text-muted-foreground",
           )}
         >
           <CalendarClock className="size-3" />
-          {due.label}
+          {due.overdue ? overdueLabel(due.overdueDays) : due.label}
         </span>
       )}
 
