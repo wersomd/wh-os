@@ -34,7 +34,7 @@ export function BoardColumn({
   return (
     <div
       className={cn(
-        "flex w-72 shrink-0 flex-col rounded-xl border-t-2 bg-muted/40",
+        "flex w-72 shrink-0 flex-col rounded-lg border bg-muted/50",
         accent.border,
       )}
     >

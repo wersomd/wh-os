@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   ALL,
   DEFAULT_TASK_SORT,
+  DEFAULT_TASK_VIEW,
   TASK_SORT_ORDER,
   type TaskFiltersState,
   type TaskSort,
@@ -35,7 +36,10 @@ export function useTaskView() {
   const pathname = usePathname();
   const params = useSearchParams();
 
-  const view: TaskView = params.get("view") === "list" ? "list" : "board";
+  // List is the default workspace (DEFAULT_TASK_VIEW); only "board" is tracked
+  // in the URL.
+  const view: TaskView =
+    params.get("view") === "board" ? "board" : DEFAULT_TASK_VIEW;
 
   const filters: TaskFiltersState = useMemo(
     () => ({
@@ -64,7 +68,7 @@ export function useTaskView() {
   const setView = useCallback(
     (v: TaskView) =>
       commit((p) => {
-        if (v === "board") p.delete("view");
+        if (v === DEFAULT_TASK_VIEW) p.delete("view");
         else p.set("view", v);
       }),
     [commit],

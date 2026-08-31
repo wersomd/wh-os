@@ -126,12 +126,21 @@ model Account {
   transactions Transaction[]
 }
 
+enum CategoryKind {
+  SYSTEM
+  PRESET
+  CUSTOM
+}
+
 model Category {
   id            String          @id @default(cuid())
   name          String
   type          TransactionType // income vs expense category
   color         String?
   icon          String?
+  group         String?
+  kind          CategoryKind    @default(CUSTOM)
+  active        Boolean         @default(true)
   transactions  Transaction[]
   subscriptions Subscription[]
   budget        Budget?

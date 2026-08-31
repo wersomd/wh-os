@@ -54,14 +54,14 @@ export function TaskCard({
         whileHover={{ y: -2 }}
         transition={{ duration: 0.15, ease: "easeOut" }}
         className={cn(
-          "group touch-none rounded-lg border border-l-[3px] border-border bg-card p-3 text-left shadow-sm transition-shadow duration-150 hover:shadow-md",
+          "group touch-none rounded-md border border-l-[3px] border-border bg-card p-3 text-left transition-colors duration-150 hover:bg-muted/40",
           dndDisabled
             ? "cursor-pointer"
             : "cursor-grab active:cursor-grabbing",
           TASK_PRIORITY_STRIPE[task.priority],
           isDragging && "opacity-40",
           finished && "bg-muted/30",
-          overlay && "scale-[1.03] cursor-grabbing shadow-lg ring-1 ring-border",
+          overlay && "scale-[1.02] cursor-grabbing ring-1 ring-border",
         )}
       >
         <div className="flex items-start gap-2">

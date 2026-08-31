@@ -1,5 +1,7 @@
 import { TaskStatus, TaskPriority } from "@prisma/client";
 
+export const DEFAULT_TASK_VIEW = "list";
+
 // Board columns, left to right.
 export const TASK_STATUS_ORDER: TaskStatus[] = [
   TaskStatus.TODO,

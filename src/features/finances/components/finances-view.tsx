@@ -211,7 +211,7 @@ export function FinancesView({
                   <div
                     key={a.id}
                     className={cn(
-                      "rounded-xl border border-border bg-card p-4",
+                      "rounded-lg border border-border bg-card p-4",
                       a.archived && "opacity-60",
                     )}
                   >
