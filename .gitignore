@@ -42,3 +42,6 @@ yarn-error.log*
 next-env.d.ts
 .gstack/
 .worktrees/
+
+# graphify knowledge-graph output (local only)
+graphify-out/

@@ -1,52 +1,21 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { Suspense, useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { TaskStatus } from "@prisma/client";
-import { differenceInCalendarDays, startOfDay, subDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Board, type Columns } from "./board";
 import { TaskList } from "./task-list";
 import { TaskDialog } from "./task-dialog";
-import { ViewSwitcher, type TaskView } from "./view-switcher";
+import { ViewSwitcher } from "./view-switcher";
 import { TaskFilters } from "./task-filters";
 import { createTask, moveTask, toggleDone } from "../actions";
-import { ALL, TASK_STATUS_ORDER, type TaskFiltersState } from "../constants";
+import { TASK_STATUS_ORDER } from "../constants";
+import { useTaskView } from "../use-task-view";
+import { applyTaskView, matchesFilters, sortTasks } from "../view";
 import type { ProjectOption, TaskWithProject } from "../queries";
-
-const EMPTY_FILTERS: TaskFiltersState = {
-  status: ALL,
-  priority: ALL,
-  projectId: ALL,
-  due: ALL,
-  created: ALL,
-};
-
-// Due-date bucket check for the "due" filter select.
-function matchesDue(task: TaskWithProject, due: string, now: Date): boolean {
-  if (due === ALL) return true;
-  if (due === "NONE") return task.dueDate === null;
-  if (!task.dueDate) return false;
-  const days = differenceInCalendarDays(task.dueDate, now);
-  if (due === "OVERDUE") return days < 0;
-  if (due === "TODAY") return days === 0;
-  if (due === "WEEK") return days >= 0 && days <= 7;
-  return true;
-}
-
-// Created-date bucket check for the "created" filter select.
-function matchesCreated(task: TaskWithProject, created: string, now: Date): boolean {
-  if (created === ALL) return true;
-  const since =
-    created === "TODAY"
-      ? startOfDay(now)
-      : created === "WEEK"
-        ? subDays(now, 7)
-        : subDays(now, 30); // "MONTH"
-  return task.createdAt.getTime() >= since.getTime();
-}
 
 function groupByStatus(tasks: TaskWithProject[]): Columns {
   const columns = {} as Columns;
@@ -56,52 +25,70 @@ function groupByStatus(tasks: TaskWithProject[]): Columns {
   return columns;
 }
 
-export function TasksView({
-  initialTasks,
-  projects,
-  lockedProjectId,
-}: {
+type TasksViewProps = {
   initialTasks: TaskWithProject[];
   projects: ProjectOption[];
   lockedProjectId?: string;
-}) {
+};
+
+// useTaskView() reads the URL query string, so the tree needs a Suspense
+// boundary (Next 15 requirement for useSearchParams).
+export function TasksView(props: TasksViewProps) {
+  return (
+    <Suspense fallback={<div className="h-9" />}>
+      <TasksViewInner {...props} />
+    </Suspense>
+  );
+}
+
+function TasksViewInner({
+  initialTasks,
+  projects,
+  lockedProjectId,
+}: TasksViewProps) {
   const router = useRouter();
   const [, start] = useTransition();
-  const [view, setView] = useState<TaskView>("board");
+  const { view, filters, sort, isFiltered, setView, setFilters, setSort, reset } =
+    useTaskView();
+
+  // Raw per-status order, kept in sync with the server. Drag mutations write
+  // here; the board/list derive their filtered + sorted views from it.
   const [columns, setColumns] = useState<Columns>(() =>
     groupByStatus(initialTasks),
   );
-  const [filters, setFilters] = useState<TaskFiltersState>(EMPTY_FILTERS);
-
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<TaskWithProject | null>(null);
 
-  // Reconcile local state whenever the server sends fresh data.
   useEffect(() => {
     setColumns(groupByStatus(initialTasks));
   }, [initialTasks]);
 
-  const flatTasks = useMemo(
-    () => TASK_STATUS_ORDER.flatMap((s) => columns[s]),
-    [columns],
-  );
+  // Dragging only makes sense in the stored order with every card visible:
+  // once a sort or a filter is on, a reordered subset can't be persisted
+  // faithfully, so drag is locked until the user clears both.
+  const dndDisabled = sort !== "manual" || isFiltered;
 
-  const filtered = useMemo(() => {
+  const boardColumns = useMemo(() => {
     const now = new Date();
-    return flatTasks.filter((t) => {
-      if (filters.status !== ALL && t.status !== filters.status) return false;
-      if (filters.priority !== ALL && t.priority !== filters.priority)
-        return false;
-      if (
-        filters.projectId !== ALL &&
-        (t.projectId ?? "") !== filters.projectId
-      )
-        return false;
-      if (!matchesDue(t, filters.due, now)) return false;
-      if (!matchesCreated(t, filters.created, now)) return false;
-      return true;
-    });
-  }, [flatTasks, filters]);
+    const out = {} as Columns;
+    for (const s of TASK_STATUS_ORDER) {
+      out[s] = sortTasks(
+        columns[s].filter((t) => matchesFilters(t, filters, now)),
+        sort,
+      );
+    }
+    return out;
+  }, [columns, filters, sort]);
+
+  const listTasks = useMemo(
+    () =>
+      applyTaskView(
+        TASK_STATUS_ORDER.flatMap((s) => columns[s]),
+        filters,
+        sort,
+      ),
+    [columns, filters, sort],
+  );
 
   function openCreate() {
     setEditing(null);
@@ -158,25 +145,27 @@ export function TasksView({
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <ViewSwitcher view={view} onChange={setView} />
-        <div className="flex items-center gap-2">
-          {view === "list" && (
-            <TaskFilters
-              filters={filters}
-              onChange={setFilters}
-              projects={projects}
-              showProject={!lockedProjectId}
-            />
-          )}
-          <Button onClick={openCreate}>
-            <Plus className="size-4" />
-            Задача
-          </Button>
-        </div>
+        <Button onClick={openCreate}>
+          <Plus className="size-4" />
+          Задача
+        </Button>
       </div>
+
+      <TaskFilters
+        filters={filters}
+        onChange={setFilters}
+        sort={sort}
+        onSortChange={setSort}
+        onReset={reset}
+        isFiltered={isFiltered}
+        projects={projects}
+        showProject={!lockedProjectId}
+      />
 
       {view === "board" ? (
         <Board
-          columns={columns}
+          columns={boardColumns}
+          dndDisabled={dndDisabled}
           onColumnsChange={setColumns}
           onMoveEnd={persistMove}
           onAddTask={addTask}
@@ -184,7 +173,7 @@ export function TasksView({
         />
       ) : (
         <TaskList
-          tasks={filtered}
+          tasks={listTasks}
           onToggle={onToggle}
           onCardClick={onCardClick}
         />

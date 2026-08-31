@@ -15,11 +15,13 @@ import type { TaskWithProject } from "../queries";
 export function BoardColumn({
   status,
   tasks,
+  dndDisabled = false,
   onAddTask,
   onCardClick,
 }: {
   status: TaskStatus;
   tasks: TaskWithProject[];
+  dndDisabled?: boolean;
   onAddTask: (title: string, status: TaskStatus) => void;
   onCardClick: (task: TaskWithProject) => void;
 }) {
@@ -61,6 +63,7 @@ export function BoardColumn({
             <TaskCard
               key={task.id}
               task={task}
+              dndDisabled={dndDisabled}
               onClick={() => onCardClick(task)}
             />
           ))}

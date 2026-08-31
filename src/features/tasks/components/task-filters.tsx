@@ -1,5 +1,7 @@
 "use client";
 
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -15,25 +17,52 @@ import {
   DUE_FILTER_ORDER,
   TASK_PRIORITY_LABELS,
   TASK_PRIORITY_ORDER,
+  TASK_SORT_LABELS,
+  TASK_SORT_ORDER,
   TASK_STATUS_LABELS,
   TASK_STATUS_ORDER,
   type TaskFiltersState,
+  type TaskSort,
 } from "../constants";
 import type { ProjectOption } from "../queries";
 
 export function TaskFilters({
   filters,
   onChange,
+  sort,
+  onSortChange,
+  onReset,
+  isFiltered,
   projects,
   showProject,
 }: {
   filters: TaskFiltersState;
   onChange: (next: TaskFiltersState) => void;
+  sort: TaskSort;
+  onSortChange: (next: TaskSort) => void;
+  onReset: () => void;
+  isFiltered: boolean;
   projects: ProjectOption[];
   showProject: boolean;
 }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap items-center gap-2">
+      <Select
+        value={sort}
+        onValueChange={(v) => onSortChange(v as TaskSort)}
+      >
+        <SelectTrigger className="h-9 w-[170px]">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {TASK_SORT_ORDER.map((s) => (
+            <SelectItem key={s} value={s}>
+              {TASK_SORT_LABELS[s]}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
       <Select
         value={filters.status}
         onValueChange={(v) => onChange({ ...filters, status: v })}
@@ -120,6 +149,18 @@ export function TaskFilters({
           ))}
         </SelectContent>
       </Select>
+
+      {isFiltered && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onReset}
+          className="h-9 text-muted-foreground"
+        >
+          <X className="size-4" />
+          Сбросить
+        </Button>
+      )}
     </div>
   );
 }
