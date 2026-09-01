@@ -3,54 +3,62 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ─── Design tokens ───
-   White-first minimalism with a graphite dark theme and one evergreen accent. */
+   WH·OS — white-first minimalism with a near-black ("ink") dark theme and one
+   electric-blue accent ("signal", #2E5CFF), matching the WH Solutions identity. */
 
 :root {
   --radius: 0.5rem;
 
   --background: oklch(1 0 0);
-  --foreground: oklch(0.09 0 0);
+  --foreground: oklch(0.17 0.006 264);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.09 0 0);
+  --card-foreground: oklch(0.17 0.006 264);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.09 0 0);
-  --primary: oklch(0.43 0.09 155);
+  --popover-foreground: oklch(0.17 0.006 264);
+  --primary: oklch(0.55 0.24 264);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.965 0.008 155);
-  --secondary-foreground: oklch(0.09 0 0);
-  --muted: oklch(0.96 0.006 155);
-  --muted-foreground: oklch(0.46 0.015 155);
-  --accent: oklch(0.93 0.025 155);
-  --accent-foreground: oklch(0.09 0 0);
+  --secondary: oklch(0.965 0.008 264);
+  --secondary-foreground: oklch(0.17 0.006 264);
+  --muted: oklch(0.96 0.006 264);
+  --muted-foreground: oklch(0.46 0.02 264);
+  --accent: oklch(0.93 0.03 264);
+  --accent-foreground: oklch(0.17 0.006 264);
   --destructive: oklch(0.56 0.16 28);
   --destructive-foreground: oklch(0.985 0 0);
-  --success: oklch(0.48 0.1 155);
-  --border: oklch(0.88 0 0);
-  --input: oklch(0.88 0 0);
-  --ring: oklch(0.43 0.09 155);
+  --success: oklch(0.5 0.12 155);
+  --border: oklch(0.9 0.004 264);
+  --input: oklch(0.9 0.004 264);
+  --ring: oklch(0.55 0.24 264);
+
+  /* Brand mark (node-graph logomark) */
+  --brand-frame: oklch(0.17 0.006 264);
+  --brand-node: oklch(0.55 0.24 264);
 }
 
 .dark {
-  --background: oklch(0.13 0.008 155);
-  --foreground: oklch(0.96 0.006 155);
-  --card: oklch(0.17 0.01 155);
-  --card-foreground: oklch(0.96 0.006 155);
-  --popover: oklch(0.2 0.012 155);
-  --popover-foreground: oklch(0.96 0.006 155);
-  --primary: oklch(0.72 0.11 155);
-  --primary-foreground: oklch(0.16 0.02 155);
-  --secondary: oklch(0.22 0.012 155);
-  --secondary-foreground: oklch(0.96 0.006 155);
-  --muted: oklch(0.21 0.01 155);
-  --muted-foreground: oklch(0.68 0.015 155);
-  --accent: oklch(0.27 0.035 155);
-  --accent-foreground: oklch(0.96 0.006 155);
+  --background: oklch(0.16 0.008 264);
+  --foreground: oklch(0.96 0.004 264);
+  --card: oklch(0.19 0.01 264);
+  --card-foreground: oklch(0.96 0.004 264);
+  --popover: oklch(0.21 0.012 264);
+  --popover-foreground: oklch(0.96 0.004 264);
+  --primary: oklch(0.62 0.2 264);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.24 0.012 264);
+  --secondary-foreground: oklch(0.96 0.004 264);
+  --muted: oklch(0.23 0.01 264);
+  --muted-foreground: oklch(0.68 0.018 264);
+  --accent: oklch(0.29 0.04 264);
+  --accent-foreground: oklch(0.96 0.004 264);
   --destructive: oklch(0.69 0.14 28);
-  --destructive-foreground: oklch(0.17 0.02 155);
-  --success: oklch(0.74 0.1 155);
-  --border: oklch(0.33 0.012 155);
-  --input: oklch(0.3 0.012 155);
-  --ring: oklch(0.72 0.11 155);
+  --destructive-foreground: oklch(0.16 0.02 264);
+  --success: oklch(0.74 0.13 155);
+  --border: oklch(0.32 0.012 264);
+  --input: oklch(0.3 0.012 264);
+  --ring: oklch(0.62 0.2 264);
+
+  --brand-frame: oklch(0.32 0.012 264);
+  --brand-node: oklch(0.78 0.16 264);
 }
 
 @theme inline {
@@ -75,8 +83,9 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-unbounded), var(--font-inter), sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -91,7 +100,10 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+    font-family: var(--font-sans);
     letter-spacing: 0;
+  }
+  .font-display {
+    font-family: var(--font-display);
   }
 }

@@ -101,7 +101,7 @@ export function NoteCard({
             >
               <span
                 className="size-2 rounded-full"
-                style={{ backgroundColor: note.project.color ?? "#8b5cf6" }}
+                style={{ backgroundColor: note.project.color ?? "#2E5CFF" }}
               />
               {note.project.name}
             </span>

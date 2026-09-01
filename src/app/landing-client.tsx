@@ -16,7 +16,7 @@ const stagger: Variants = {
 
 const FEATURES = [
   { icon: Wallet,      name: "Финансы",  desc: "Счета, транзакции, аналитика расходов", accent: "emerald" as const },
-  { icon: CheckSquare, name: "Задачи",   desc: "Канбан и приоритеты",                   accent: "violet"  as const },
+  { icon: CheckSquare, name: "Задачи",   desc: "Канбан и приоритеты",                   accent: "blue"    as const },
   { icon: FolderKanban,name: "Проекты",  desc: "Прогресс, дедлайны, статусы",           accent: "amber"   as const },
   { icon: Target,      name: "Цели",     desc: "OKR и ключевые результаты",             accent: "fuchsia" as const },
   { icon: BookOpen,    name: "Дневник",  desc: "Настроение и рефлексия",                accent: "sky"     as const },
@@ -27,7 +27,7 @@ type Accent = (typeof FEATURES)[number]["accent"];
 
 const ACCENT: Record<Accent, { icon: string; bg: string; border: string }> = {
   emerald: { icon: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-l-emerald-500" },
-  violet:  { icon: "text-violet-400",  bg: "bg-violet-500/10",  border: "border-l-violet-500"  },
+  blue:    { icon: "text-blue-400",    bg: "bg-blue-500/10",    border: "border-l-blue-500"    },
   amber:   { icon: "text-amber-400",   bg: "bg-amber-500/10",   border: "border-l-amber-500"   },
   fuchsia: { icon: "text-fuchsia-400", bg: "bg-fuchsia-500/10", border: "border-l-fuchsia-500" },
   sky:     { icon: "text-sky-400",     bg: "bg-sky-500/10",     border: "border-l-sky-500"     },
@@ -57,8 +57,8 @@ function DashboardMockup() {
           <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.15" />
         </linearGradient>
         <linearGradient id="lp-bar2" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.7" />
-          <stop offset="100%" stopColor="#a78bfa" stopOpacity="0.15" />
+          <stop offset="0%" stopColor="#5b8cff" stopOpacity="0.7" />
+          <stop offset="100%" stopColor="#5b8cff" stopOpacity="0.15" />
         </linearGradient>
       </defs>
 
@@ -67,19 +67,19 @@ function DashboardMockup() {
 
       {/* Sidebar */}
       <rect width="220" height="800" fill="#141418" />
-      <text x="24" y="42" fill="#a78bfa" fontSize="20" fontWeight="700" fontFamily="system-ui,sans-serif">
-        JinseiOS
+      <text x="24" y="42" fill="#5b8cff" fontSize="20" fontWeight="700" fontFamily="system-ui,sans-serif">
+        WH·OS
       </text>
       {(["Дашборд", "Проекты", "Финансы", "Задачи", "Цели", "Дневник", "Здоровье"] as const).map(
         (label, i) => (
           <g key={label}>
             {i === 0 && (
-              <rect x="12" y={68 + i * 44} width="196" height="36" rx="7" fill="#3b1d8a" />
+              <rect x="12" y={68 + i * 44} width="196" height="36" rx="7" fill="#1e3a8a" />
             )}
             <text
               x="40"
               y={92 + i * 44}
-              fill={i === 0 ? "#c4b5fd" : "#4b5563"}
+              fill={i === 0 ? "#bfdbfe" : "#4b5563"}
               fontSize="13"
               fontFamily="system-ui,sans-serif"
             >
@@ -213,7 +213,7 @@ export function LandingClient() {
           className="pointer-events-none absolute inset-0 -z-10"
           style={{
             background:
-              "radial-gradient(ellipse 80% 60% at 50% 40%, oklch(0.646 0.246 292.717 / 0.18) 0%, transparent 70%)",
+              "radial-gradient(ellipse 80% 60% at 50% 40%, oklch(0.55 0.24 264 / 0.2) 0%, transparent 70%)",
             animation: "pulse-bg 6s ease-in-out infinite",
           }}
         />
@@ -237,7 +237,7 @@ export function LandingClient() {
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className="text-5xl font-bold tracking-tight sm:text-7xl"
+          className="font-display text-5xl font-bold tracking-tight sm:text-7xl"
         >
           Твоя жизнь.
           <br />
@@ -280,7 +280,7 @@ export function LandingClient() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-80px" }}
-            className="mb-12 text-center text-3xl font-bold"
+            className="mb-12 text-center font-display text-3xl font-bold"
           >
             Все модули в одном приложении
           </motion.h2>
@@ -320,7 +320,7 @@ export function LandingClient() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-80px" }}
-            className="mb-12 text-center text-3xl font-bold"
+            className="mb-12 text-center font-display text-3xl font-bold"
           >
             Всё в одном интерфейсе
           </motion.h2>
@@ -337,7 +337,7 @@ export function LandingClient() {
               <span aria-hidden="true" className="size-3 rounded-full bg-amber-500" />
               <span aria-hidden="true" className="size-3 rounded-full bg-emerald-500" />
               <div className="ml-4 flex-1 rounded-md bg-muted/50 px-3 py-1 text-xs text-muted-foreground">
-                jinseios.app/dashboard
+                wh-os.app/dashboard
               </div>
             </div>
             <DashboardMockup />
@@ -355,7 +355,7 @@ export function LandingClient() {
             viewport={{ once: true, margin: "-80px" }}
             className="rounded-2xl border border-primary/30 bg-card p-12 text-center shadow-xl shadow-primary/5"
           >
-            <h2 className="mb-4 text-3xl font-bold">Готов начать?</h2>
+            <h2 className="mb-4 font-display text-3xl font-bold">Готов начать?</h2>
             <p className="mb-8 text-muted-foreground">Всё твоё — в одном месте.</p>
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
               <Link
@@ -371,7 +371,7 @@ export function LandingClient() {
 
       {/* ── Footer ── */}
       <footer className="border-t border-border px-4 py-8 text-center text-sm text-muted-foreground">
-        JinseiOS · 2026
+        WH·OS · 2026
       </footer>
     </main>
   );

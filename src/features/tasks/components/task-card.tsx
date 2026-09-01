@@ -47,6 +47,11 @@ export function TaskCard({
       {...attributes}
       {...listeners}
       onClick={onClick}
+      // dnd-kit's PointerSensor needs touch-action:none *on the element that
+      // receives the pointer events* or a touch drag never starts (the browser
+      // claims the gesture for scrolling); select-none stops a mouse press from
+      // selecting the card text instead of dragging.
+      className={cn(!dndDisabled && "touch-none select-none")}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
@@ -54,7 +59,7 @@ export function TaskCard({
         whileHover={{ y: -2 }}
         transition={{ duration: 0.15, ease: "easeOut" }}
         className={cn(
-          "group touch-none rounded-md border border-l-[3px] border-border bg-card p-3 text-left transition-colors duration-150 hover:bg-muted/40",
+          "group rounded-md border border-l-[3px] border-border bg-card p-3 text-left transition-colors duration-150 hover:bg-muted/40",
           dndDisabled
             ? "cursor-pointer"
             : "cursor-grab active:cursor-grabbing",
@@ -101,7 +106,7 @@ export function TaskCard({
               <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                 <span
                   className="size-2 rounded-full"
-                  style={{ backgroundColor: task.project.color ?? "#8b5cf6" }}
+                  style={{ backgroundColor: task.project.color ?? "#2E5CFF" }}
                 />
                 {task.project.name}
               </span>

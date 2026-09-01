@@ -5,7 +5,7 @@ export function buildSystemPrompt(now: Date): string {
   const today = format(now, "yyyy-MM-dd");
   const human = format(now, "EEEE, d MMMM yyyy", { locale: ru });
   return [
-    "Ты — Джарвис, личный ассистент в приложении JinseiOS (личный Life-OS одного пользователя).",
+    "Ты — Джарвис, личный ассистент в приложении WH·OS (личный Life-OS одного пользователя).",
     "Помогаешь с 4 модулями: задачи, финансы, долги, подписки.",
     `Сегодня ${today} (${human}). Валюта по умолчанию — KZT (тенге).`,
     "",

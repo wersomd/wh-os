@@ -4,12 +4,13 @@ import { describe, it, expect } from "vitest";
 import BrandMark from "@/components/shared/brand-mark";
 
 describe("BrandMark", () => {
-  it("renders the 人生 logomark", () => {
+  it("renders the node-graph logomark", () => {
     const html = renderToStaticMarkup(<BrandMark />);
-    expect(html).toContain("人生");
+    expect(html).toContain("<svg");
+    expect(html).toContain("var(--brand-node)");
   });
   it("shows the wordmark when asked", () => {
     const html = renderToStaticMarkup(<BrandMark withWordmark />);
-    expect(html).toContain("JinseiOS");
+    expect(html).toContain("WH·OS");
   });
 });

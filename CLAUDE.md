@@ -1,6 +1,7 @@
-# jinsei-os — project guide
+# wh-os — project guide
 
-Single-user personal "Life OS" (private Notion replacement). Built in phases 0→7.
+Single-user personal "Life OS" (private Notion replacement), branded **WH·OS**
+to match the owner's IT company **WH Solutions**. Built in phases 0→7.
 
 ## Stack
 - Next.js 15 (App Router) + React 19 + TypeScript
@@ -38,8 +39,10 @@ DB runs locally in Docker, not Supabase (dev). `docker-compose.yml`:
 ## Conventions
 - Data via Server Components (read) + Server Actions (write), validated with Zod.
 - Money: `Decimal(14,2)`, never float. Default currency KZT, USD also supported (per-account).
-- Bold minimalism: stark achromatic base (true black/white) + one high-chroma
-  electric-violet accent, both light and dark themes as CSS variables (user-toggleable).
+- WH Solutions identity: white-first minimalism, near-black "ink" (#14161A) dark
+  theme, one electric-blue "signal" accent (#2E5CFF). Both light and dark themes
+  as CSS variables in `src/app/globals.css` (user-toggleable). Fonts: Inter (body),
+  Unbounded (display / `.font-display`), IBM Plex Mono.
 
 ## Windows path-casing gotcha
 The real folder is `D:\Projects\wediff` (capital P). If tooling ever resolves the path

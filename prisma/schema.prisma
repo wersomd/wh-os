@@ -1,4 +1,4 @@
-// jinsei-os — single-user personal Life OS.
+// WH·OS — single-user personal Life OS.
 // Design note: single-user, so domain tables intentionally carry NO `userId`.
 // The single `User` row exists only for login / 2FA. Add tenancy via migration
 // later if multi-user is ever needed.

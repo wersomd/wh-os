@@ -87,7 +87,7 @@ export default function JarvisBar() {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-2 border-b border-border px-4">
-          <Sparkles className="size-4 text-violet-400" />
+          <Sparkles className="size-4 text-primary" />
           <input
             ref={inputRef}
             value={input}
@@ -113,7 +113,7 @@ export default function JarvisBar() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => decide(true)}
-                    className="rounded-md bg-violet-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-violet-500"
+                    className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
                   >
                     Ок
                   </button>

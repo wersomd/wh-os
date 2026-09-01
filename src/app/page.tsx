@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { LandingClient } from "./landing-client";
 
 export const metadata: Metadata = {
-  title: "JinseiOS — личная операционная система",
-  description: "Финансы, задачи, привычки, цели — всё под контролем.",
+  title: "WH·OS — операционная система для работы и жизни",
+  description: "Финансы, задачи, проекты, цели — всё под контролем.",
 };
 
 // Root is always the public landing. The "Войти" CTA links to /dashboard;

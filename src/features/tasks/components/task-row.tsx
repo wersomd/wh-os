@@ -57,7 +57,7 @@ export function TaskRow({
         <span className="hidden items-center gap-1 text-xs text-muted-foreground md:inline-flex">
           <span
             className="size-2 rounded-full"
-            style={{ backgroundColor: task.project.color ?? "#8b5cf6" }}
+            style={{ backgroundColor: task.project.color ?? "#2E5CFF" }}
           />
           {task.project.name}
         </span>

@@ -32,17 +32,17 @@ import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Главная" };
 
-type Accent = "violet" | "amber" | "emerald" | "rose" | "fuchsia" | "sky";
+type Accent = "blue" | "amber" | "emerald" | "rose" | "fuchsia" | "sky";
 
 const ACCENT: Record<
   Accent,
   { chip: string; bar: string; ring: string; barBg: string }
 > = {
-  violet: {
-    chip: "bg-violet-500/15 text-violet-400",
-    bar: "border-l-violet-500",
-    ring: "hover:border-violet-500/50",
-    barBg: "bg-violet-500",
+  blue: {
+    chip: "bg-blue-500/15 text-blue-400",
+    bar: "border-l-blue-500",
+    ring: "hover:border-blue-500/50",
+    barBg: "bg-blue-500",
   },
   amber: {
     chip: "bg-amber-500/15 text-amber-400",
@@ -77,7 +77,7 @@ const ACCENT: Record<
 };
 
 const CALENDAR_ACCENT: Record<CalendarKind, Accent> = {
-  task: "violet",
+  task: "blue",
   goal: "fuchsia",
   debt: "rose",
   subscription: "sky",
@@ -134,7 +134,7 @@ export default async function DashboardPage() {
 
       {/* Projects — leads the dashboard */}
       <AnimatedIn delay={0} className="mb-6">
-        <Panel title="Горящие проекты" href="/projects" icon={FolderKanban} accent="violet">
+        <Panel title="Горящие проекты" href="/projects" icon={FolderKanban} accent="blue">
           <HotProjects projects={hotProjects} />
         </Panel>
       </AnimatedIn>
@@ -148,7 +148,7 @@ export default async function DashboardPage() {
         <AnimatedIn delay={0}>
           <StatCard
             href="/tasks"
-            accent="violet"
+            accent="blue"
             icon={CheckSquare}
             label="Задачи сегодня"
             value={String(s.tasks.due.length)}
@@ -224,7 +224,7 @@ export default async function DashboardPage() {
         </AnimatedIn>
 
         <AnimatedIn delay={0.28}>
-          <Panel title="Задачи на сегодня" href="/tasks" icon={CheckSquare} accent="violet">
+          <Panel title="Задачи на сегодня" href="/tasks" icon={CheckSquare} accent="blue">
             <DashboardTasks tasks={s.tasks.due} />
           </Panel>
         </AnimatedIn>

@@ -24,7 +24,7 @@ export const PROJECT_STATUS_ORDER: ProjectStatus[] = [
 // variant via tailwind-merge.
 export const PROJECT_STATUS_BADGE_CLASS: Record<ProjectStatus, string> = {
   PLANNING: "bg-slate-500/15 text-slate-400",
-  IN_PROGRESS: "bg-violet-500/15 text-violet-400",
+  IN_PROGRESS: "bg-blue-500/15 text-blue-400",
   REVIEW: "bg-amber-500/15 text-amber-400",
   ON_HOLD: "bg-sky-500/15 text-sky-400",
   DONE: "bg-emerald-500/15 text-emerald-400",
@@ -40,7 +40,7 @@ export const DEADLINE_TONE_CLASS: Record<DeadlineTone, string> = {
 
 // A small palette so projects get a consistent accent without a color wheel.
 export const PROJECT_COLORS = [
-  "#8b5cf6", // violet (default accent)
+  "#2E5CFF", // signal blue (default accent)
   "#3b82f6", // blue
   "#10b981", // emerald
   "#f59e0b", // amber

@@ -1,6 +1,6 @@
 export const siteConfig = {
-  name: "JinseiOS",
-  description: "Личная операционная система жизни",
+  name: "WH·OS",
+  description: "Операционная система для работы и жизни — от WH Solutions",
   defaultCurrency: "KZT",
   supportedCurrencies: ["KZT", "USD"] as const,
 } as const;
