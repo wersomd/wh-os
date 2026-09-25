@@ -1,5 +1,5 @@
 import "server-only";
-import { addDays, endOfDay, endOfMonth, format, startOfDay, startOfMonth } from "date-fns";
+import { addDays, endOfDay, endOfMonth, startOfDay, startOfMonth } from "date-fns";
 import { DebtStatus, GoalStatus, TaskStatus, TransactionType } from "@prisma/client";
 import { db } from "@/lib/db";
 import {
@@ -16,8 +16,6 @@ import { computeFinancePulse, type FinancePulse } from "./lib/finance-pulse";
 export async function getDashboardSummary() {
   const now = new Date();
   const endToday = endOfDay(now);
-  const todayDateKey = format(now, "yyyy-MM-dd");
-  const todayDate = new Date(`${todayDateKey}T00:00:00.000Z`);
   const in7 = endOfDay(addDays(now, 7));
 
   const [
@@ -28,7 +26,6 @@ export async function getDashboardSummary() {
     pinnedNotes,
     openDebts,
     activeGoals,
-    todayEntry,
     upcoming,
     calendarMonthItems,
     monthlyTotals,
@@ -71,10 +68,6 @@ export async function getDashboardSummary() {
       orderBy: [{ dueDate: "asc" }, { createdAt: "desc" }],
       take: 8,
       include: { keyResults: { select: { done: true } } },
-    }),
-    db.journalEntry.findUnique({
-      where: { date: todayDate },
-      select: { mood: true },
     }),
     getUpcomingItems(),
     getCalendarItems({ from: startOfMonth(now), to: endOfMonth(now) }),
@@ -161,7 +154,6 @@ export async function getDashboardSummary() {
       overdue: overdueDebts,
     },
     goals,
-    todayMood: todayEntry?.mood ?? null,
     upcoming: upcoming.slice(0, 7),
     calendarMonth: { month: startOfMonth(now), items: calendarMonthItems },
     financeThisMonth: { income: monthIncome, expense: monthExpense },

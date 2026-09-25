@@ -356,41 +356,6 @@ model GoalKeyResult {
   @@index([goalId])
 }
 
-// ─────────────────────────── JOURNAL (Phase 8) ───────────────────────────
-model JournalEntry {
-  id        String   @id @default(cuid())
-  date      DateTime @unique @db.Date // one entry per day
-  mood      Int? // 1..5, optional
-  content   String   @default("") // markdown
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// ─────────────────────────── HEALTH (Phase 8) ───────────────────────────
-model HealthMetric {
-  id        String      @id @default(cuid())
-  name      String      @unique
-  unit      String? // "кг", "ч", "мл"
-  icon      String?
-  color     String?
-  target    Decimal?    @db.Decimal(14, 2) // optional daily goal
-  archived  Boolean     @default(false)
-  createdAt DateTime    @default(now())
-  logs      HealthLog[]
-}
-
-model HealthLog {
-  id       String       @id @default(cuid())
-  metricId String
-  metric   HealthMetric @relation(fields: [metricId], references: [id], onDelete: Cascade)
-  date     DateTime     @db.Date
-  value    Decimal      @db.Decimal(14, 2)
-  note     String?
-
-  @@unique([metricId, date]) // one value per metric per day
-  @@index([date])
-}
-
 // ─────────────────────────── WISHLIST (Phase 8) ───────────────────────────
 enum WishType {
   BOOK

@@ -24,7 +24,6 @@ import { HotProjects } from "@/features/dashboard/components/hot-projects";
 import { getHotProjects } from "@/features/projects/queries";
 import { SavingsInsightCard } from "@/features/finances/components/savings-insight-card";
 import { formatMoney } from "@/features/finances/money";
-import { MOOD_EMOJI, MOOD_LABEL } from "@/features/journal/constants";
 import { getDashboardSummary, getFinancePulse, getTodayFocus } from "@/features/dashboard/queries";
 import { DashboardCalendarWidget } from "@/features/calendar/components/dashboard-calendar-widget";
 import type { CalendarKind } from "@/features/calendar/queries";
@@ -120,16 +119,6 @@ export default async function DashboardPage() {
             {format(now, "EEEE, d MMMM", { locale: ru })}
           </p>
         </div>
-        {s.todayMood != null && (
-          <Link
-            href="/journal"
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-sm transition-colors hover:border-amber-500/50"
-            title={MOOD_LABEL[s.todayMood]}
-          >
-            <span className="text-base">{MOOD_EMOJI[s.todayMood]}</span>
-            <span className="text-muted-foreground">настроение сегодня</span>
-          </Link>
-        )}
       </div>
 
       {/* Projects — leads the dashboard */}
