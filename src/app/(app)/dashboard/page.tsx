@@ -1,95 +1,14 @@
-import Link from "next/link";
 import type { Metadata } from "next";
-import { differenceInCalendarDays, format, isToday, isTomorrow } from "date-fns";
+import { format } from "date-fns";
 import { ru } from "date-fns/locale";
-import {
-  CalendarClock,
-  CalendarPlus,
-  CalendarRange,
-  CheckSquare,
-  CreditCard,
-  FolderKanban,
-  HandCoins,
-  Pin,
-  Target,
-  TrendingDown,
-  Wallet,
-  type LucideIcon,
-} from "lucide-react";
+import { Briefcase, Landmark, Heart } from "lucide-react";
 import { AnimatedIn } from "@/components/shared/animated-in";
-import { DashboardTasks } from "@/features/dashboard/components/dashboard-tasks";
-import { TodayFocus } from "@/features/dashboard/components/today-focus";
-import { FinancePulse } from "@/features/dashboard/components/finance-pulse";
-import { HotProjects } from "@/features/dashboard/components/hot-projects";
+import { GroupTile, TileRow } from "@/features/dashboard/components/group-tile";
 import { getHotProjects } from "@/features/projects/queries";
-import { SavingsInsightCard } from "@/features/finances/components/savings-insight-card";
 import { formatMoney } from "@/features/finances/money";
-import { getDashboardSummary, getFinancePulse, getTodayFocus } from "@/features/dashboard/queries";
-import { DashboardCalendarWidget } from "@/features/calendar/components/dashboard-calendar-widget";
-import type { CalendarKind } from "@/features/calendar/queries";
-import { cn } from "@/lib/utils";
+import { getDashboardSummary, getPersonalSummary } from "@/features/dashboard/queries";
 
 export const metadata: Metadata = { title: "Главная" };
-
-type Accent = "blue" | "amber" | "emerald" | "rose" | "fuchsia" | "sky";
-
-const ACCENT: Record<
-  Accent,
-  { chip: string; bar: string; ring: string; barBg: string }
-> = {
-  blue: {
-    chip: "bg-blue-500/15 text-blue-400",
-    bar: "border-l-blue-500",
-    ring: "hover:border-blue-500/50",
-    barBg: "bg-blue-500",
-  },
-  amber: {
-    chip: "bg-amber-500/15 text-amber-400",
-    bar: "border-l-amber-500",
-    ring: "hover:border-amber-500/50",
-    barBg: "bg-amber-500",
-  },
-  emerald: {
-    chip: "bg-emerald-500/15 text-emerald-400",
-    bar: "border-l-emerald-500",
-    ring: "hover:border-emerald-500/50",
-    barBg: "bg-emerald-500",
-  },
-  rose: {
-    chip: "bg-rose-500/15 text-rose-400",
-    bar: "border-l-rose-500",
-    ring: "hover:border-rose-500/50",
-    barBg: "bg-rose-500",
-  },
-  fuchsia: {
-    chip: "bg-fuchsia-500/15 text-fuchsia-400",
-    bar: "border-l-fuchsia-500",
-    ring: "hover:border-fuchsia-500/50",
-    barBg: "bg-fuchsia-500",
-  },
-  sky: {
-    chip: "bg-sky-500/15 text-sky-400",
-    bar: "border-l-sky-500",
-    ring: "hover:border-sky-500/50",
-    barBg: "bg-sky-500",
-  },
-};
-
-const CALENDAR_ACCENT: Record<CalendarKind, Accent> = {
-  task: "blue",
-  goal: "fuchsia",
-  debt: "rose",
-  subscription: "sky",
-  event: "emerald",
-};
-
-const CALENDAR_ICON: Record<CalendarKind, LucideIcon> = {
-  task: CheckSquare,
-  goal: Target,
-  debt: HandCoins,
-  subscription: CreditCard,
-  event: CalendarPlus,
-};
 
 function greeting(hour: number): string {
   if (hour < 6) return "Доброй ночи";
@@ -98,429 +17,118 @@ function greeting(hour: number): string {
   return "Добрый вечер";
 }
 
+function pluralizeTask(n: number): string {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return "задача";
+  if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100)) return "задачи";
+  return "задач";
+}
+
 export default async function DashboardPage() {
-  const s = await getDashboardSummary();
-  const today = await getTodayFocus();
-  const pulse = await getFinancePulse();
-  const hotProjects = await getHotProjects();
+  const [s, hotProjects, personal] = await Promise.all([
+    getDashboardSummary(),
+    getHotProjects(1),
+    getPersonalSummary(),
+  ]);
   const now = new Date();
   const currencies = Object.entries(s.balances);
   const debtCurrencies = Object.entries(s.debts.totals);
+  const topProject = hotProjects[0];
+  const nextSub = s.subscriptions[0];
+  const firingToday = s.tasks.due.length;
 
   return (
     <>
-      {/* Greeting hero */}
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {greeting(now.getHours())} 👋
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground first-letter:uppercase">
-            {format(now, "EEEE, d MMMM", { locale: ru })}
-          </p>
-        </div>
+      <div className="mb-8">
+        <h1 className="font-display text-4xl font-bold tracking-tight">
+          {greeting(now.getHours())}
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground first-letter:uppercase">
+          {format(now, "EEEE, d MMMM", { locale: ru })}
+          {firingToday > 0 &&
+            ` · ${firingToday} ${pluralizeTask(firingToday)} горит сегодня`}
+        </p>
       </div>
 
-      {/* Projects — leads the dashboard */}
-      <AnimatedIn delay={0} className="mb-6">
-        <Panel title="Горящие проекты" href="/projects" icon={FolderKanban} accent="blue">
-          <HotProjects projects={hotProjects} />
-        </Panel>
-      </AnimatedIn>
-
-      <AnimatedIn delay={0.04} className="mb-6">
-        <TodayFocus items={today} />
-      </AnimatedIn>
-
-      {/* Key numbers */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
+      <div className="grid gap-5 md:grid-cols-3">
         <AnimatedIn delay={0}>
-          <StatCard
-            href="/tasks"
-            accent="blue"
-            icon={CheckSquare}
-            label="Задачи сегодня"
-            value={String(s.tasks.due.length)}
-            hint={`${s.tasks.openCount} открытых всего`}
-          />
-        </AnimatedIn>
-        <AnimatedIn delay={0.04}>
-          <StatCard
-            href="/finances"
-            accent="emerald"
-            icon={Wallet}
-            label="Баланс"
-            value={
-              currencies.length
-                ? formatMoney(currencies[0][1], currencies[0][0])
-                : "—"
-            }
-            hint={
-              currencies.length > 1
-                ? currencies.slice(1).map(([c, v]) => formatMoney(v, c)).join(" · ")
-                : "по всем счетам"
-            }
-          />
-        </AnimatedIn>
-        <AnimatedIn delay={0.08}>
-          <StatCard
-            href="/finances"
-            accent="rose"
-            icon={TrendingDown}
-            label="Расходы (месяц)"
-            value={
-              s.financeThisMonth.expense > 0
-                ? formatMoney(s.financeThisMonth.expense, "KZT")
-                : "—"
-            }
-            hint={
-              s.financeThisMonth.income > 0
-                ? `доходы ${formatMoney(s.financeThisMonth.income, "KZT")}`
-                : "нет данных"
-            }
-          />
-        </AnimatedIn>
-        <AnimatedIn delay={0.12}>
-          <StatCard
-            href="/goals"
-            accent="fuchsia"
-            icon={Target}
-            label="Цели"
-            value={String(s.goals.length)}
-            hint="в работе"
-          />
-        </AnimatedIn>
-        <AnimatedIn delay={0.16}>
-          <StatCard
-            href="/subscriptions"
-            accent="sky"
-            icon={CreditCard}
-            label="Платежи 7 дней"
-            value={String(s.subscriptions.length)}
-            hint="ближайшие списания"
-          />
-        </AnimatedIn>
-      </div>
-
-      <AnimatedIn delay={0.2} className="mt-5">
-        <FinancePulse data={pulse} />
-      </AnimatedIn>
-
-      {/* Calendar + Tasks */}
-      <div className="mt-6 grid gap-5 lg:grid-cols-3">
-        <AnimatedIn delay={0.24} className="lg:col-span-2">
-          <DashboardCalendarWidget month={s.calendarMonth.month} items={s.calendarMonth.items} />
-        </AnimatedIn>
-
-        <AnimatedIn delay={0.28}>
-          <Panel title="Задачи на сегодня" href="/tasks" icon={CheckSquare} accent="blue">
-            <DashboardTasks tasks={s.tasks.due} />
-          </Panel>
-        </AnimatedIn>
-      </div>
-
-      {/* Upcoming + Goals */}
-      <div className="mt-5 grid gap-5 lg:grid-cols-3">
-        <AnimatedIn delay={0.32} className="lg:col-span-2">
-          <Panel title="Ближайшее" href="/calendar" icon={CalendarRange} accent="sky">
-            {s.upcoming.length === 0 ? (
-              <Empty text="На ближайшие 30 дней ничего не запланировано." />
-            ) : (
-              <ul className="divide-y divide-border">
-                {s.upcoming.map((item) => {
-                  const Icon = CALENDAR_ICON[item.kind];
-                  const acc = ACCENT[CALENDAR_ACCENT[item.kind]];
-                  const overdue = differenceInCalendarDays(item.date, now) < 0;
-                  return (
-                    <li key={item.id} className="flex items-center gap-3 py-2.5">
-                      <span
-                        className={cn(
-                          "flex size-7 shrink-0 items-center justify-center rounded-md",
-                          acc.chip,
-                        )}
-                      >
-                        <Icon className="size-3.5" />
-                      </span>
-                      <span className="flex-1 truncate text-sm">{item.title}</span>
-                      {item.meta && (
-                        <span className="hidden text-xs text-muted-foreground sm:inline">
-                          {item.meta}
-                        </span>
-                      )}
-                      <span
-                        className={cn(
-                          "w-24 text-right text-xs tabular-nums",
-                          overdue ? "text-destructive" : "text-muted-foreground",
-                        )}
-                      >
-                        {relativeDay(item.date, now)}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
+          <GroupTile id="work" title="Работа" icon={Briefcase}>
+            <TileRow
+              href="/tasks"
+              label="Открытых задач"
+              value={String(s.tasks.openCount)}
+            />
+            <TileRow
+              href="/tasks"
+              label="Горит сегодня"
+              value={String(firingToday)}
+              alert={firingToday > 0}
+            />
+            {topProject && (
+              <TileRow
+                href={`/projects/${topProject.id}`}
+                label={topProject.name}
+                value={`${topProject.progress.percent ?? 0}%`}
+              />
             )}
-          </Panel>
+          </GroupTile>
         </AnimatedIn>
 
-        <AnimatedIn delay={0.36}>
-          <Panel title="Цели" href="/goals" icon={Target} accent="fuchsia">
-            {s.goals.length === 0 ? (
-              <Empty text="Активных целей нет. Поставьте первую." />
+        <AnimatedIn delay={0.05}>
+          <GroupTile id="money" title="Деньги" icon={Landmark}>
+            {currencies.length === 0 ? (
+              <TileRow href="/finances" label="Баланс" value="—" />
             ) : (
-              <ul className="space-y-3 pt-1">
-                {s.goals.slice(0, 4).map((g) => (
-                  <li key={g.id}>
-                    <div className="mb-1 flex items-center justify-between gap-2 text-sm">
-                      <span className="truncate">{g.title}</span>
-                      <span className="shrink-0 tabular-nums text-muted-foreground">
-                        {g.progress}%
-                      </span>
-                    </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                      <div
-                        className="h-full rounded-full bg-fuchsia-500"
-                        style={{ width: `${g.progress}%` }}
-                      />
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Panel>
-        </AnimatedIn>
-      </div>
-
-      {/* Subscriptions + Finance */}
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
-        <AnimatedIn delay={0.4}>
-          <Panel title="Ближайшие платежи" href="/subscriptions" icon={CreditCard} accent="sky">
-            {s.subscriptions.length === 0 ? (
-              <Empty text="Нет платежей в ближайшие 7 дней." />
-            ) : (
-              <ul className="divide-y divide-border">
-                {s.subscriptions.map((sub) => {
-                  const days = differenceInCalendarDays(sub.nextPaymentDate, now);
-                  return (
-                    <li key={sub.id} className="flex items-center gap-2 py-2.5">
-                      <span className="text-lg">{sub.icon || "💳"}</span>
-                      <span className="flex-1 truncate text-sm">{sub.name}</span>
-                      <span className="text-sm font-medium tabular-nums">
-                        {formatMoney(sub.amount, sub.currency)}
-                      </span>
-                      <span className="inline-flex w-20 items-center justify-end gap-1 text-xs text-muted-foreground">
-                        <CalendarClock className="size-3" />
-                        {days <= 0 ? "сегодня" : `${days} дн.`}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </Panel>
-        </AnimatedIn>
-
-        <AnimatedIn delay={0.44}>
-          <Panel title="Финансы (этот месяц)" href="/finances" icon={Wallet} accent="emerald">
-            {s.financeThisMonth.income === 0 && s.financeThisMonth.expense === 0 ? (
-              <Empty text="Нет транзакций за этот месяц." />
-            ) : (
-              <div className="space-y-3 pt-1">
-                <FinanceRow
-                  label="Доходы"
-                  value={s.financeThisMonth.income}
-                  total={Math.max(s.financeThisMonth.income, s.financeThisMonth.expense)}
-                  color="bg-emerald-500"
+              currencies.map(([currency, value]) => (
+                <TileRow
+                  key={currency}
+                  href="/finances"
+                  label={`Баланс, ${currency}`}
+                  value={formatMoney(value, currency)}
                 />
-                <FinanceRow
-                  label="Расходы"
-                  value={s.financeThisMonth.expense}
-                  total={Math.max(s.financeThisMonth.income, s.financeThisMonth.expense)}
-                  color="bg-destructive"
-                />
-                <div className="border-t border-border pt-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Сальдо</span>
-                    <span
-                      className={cn(
-                        "font-semibold tabular-nums",
-                        s.financeThisMonth.income - s.financeThisMonth.expense >= 0
-                          ? "text-emerald-500"
-                          : "text-destructive",
-                      )}
-                    >
-                      {formatMoney(
-                        s.financeThisMonth.income - s.financeThisMonth.expense,
-                        "KZT",
-                      )}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              ))
             )}
-          </Panel>
+            {nextSub && (
+              <TileRow
+                href="/subscriptions"
+                label={nextSub.name}
+                value={formatMoney(nextSub.amount, nextSub.currency)}
+              />
+            )}
+            {debtCurrencies.length > 0 && (
+              <TileRow
+                href="/debts"
+                label="Просрочено долгов"
+                value={String(s.debts.overdue)}
+                alert={s.debts.overdue > 0}
+              />
+            )}
+          </GroupTile>
+        </AnimatedIn>
+
+        <AnimatedIn delay={0.1}>
+          <GroupTile id="personal" title="Личное" icon={Heart}>
+            <TileRow
+              href="/notes"
+              label="Закреплённых заметок"
+              value={String(personal.pinnedNotesCount)}
+            />
+            {personal.wishlistHighlights[0] && (
+              <TileRow
+                href="/wishlist"
+                label={personal.wishlistHighlights[0].title}
+                value="хочу"
+              />
+            )}
+            <TileRow
+              href="/links"
+              label="Сохранённых ссылок"
+              value={String(personal.bookmarkCount)}
+            />
+          </GroupTile>
         </AnimatedIn>
       </div>
-
-      {/* Debts */}
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
-        <AnimatedIn delay={0.48}>
-          <Panel title="Долги" href="/debts" icon={HandCoins} accent="rose">
-            {debtCurrencies.length === 0 ? (
-              <Empty text="Нет открытых долгов." />
-            ) : (
-              <div className="space-y-3 pt-1">
-                {debtCurrencies.map(([currency, totals]) => (
-                  <div key={currency} className="space-y-1.5">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Мне должны</span>
-                      <span className="tabular-nums text-emerald-500">
-                        {formatMoney(totals.owedToMe, currency)}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Я должен</span>
-                      <span className="tabular-nums text-destructive">
-                        {formatMoney(totals.iOwe, currency)}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between border-t border-border pt-1.5 text-sm font-medium">
-                      <span>Чистый баланс</span>
-                      <span
-                        className={cn(
-                          "tabular-nums",
-                          totals.net >= 0 ? "text-emerald-500" : "text-destructive",
-                        )}
-                      >
-                        {formatMoney(totals.net, currency)}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-                {s.debts.overdue > 0 && (
-                  <p className="text-xs font-medium text-destructive">
-                    {s.debts.overdue} просрочено
-                  </p>
-                )}
-              </div>
-            )}
-          </Panel>
-        </AnimatedIn>
-      </div>
-
-      <AnimatedIn delay={0.52} className="mt-5">
-        <SavingsInsightCard insights={s.insights} accounts={s.accounts} />
-      </AnimatedIn>
-
-      {s.pinnedNotes > 0 && (
-        <Link
-          href="/notes"
-          className="mt-5 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <Pin className="size-4" />
-          Закреплённых заметок: {s.pinnedNotes}
-        </Link>
-      )}
     </>
   );
-}
-
-function FinanceRow({
-  label,
-  value,
-  total,
-  color,
-}: {
-  label: string;
-  value: number;
-  total: number;
-  color: string;
-}) {
-  const pct = total > 0 ? Math.min(100, Math.round((value / total) * 100)) : 0;
-  return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between text-sm">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="tabular-nums font-medium">{formatMoney(value, "KZT")}</span>
-      </div>
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-        <div className={cn("h-full rounded-full transition-all", color)} style={{ width: `${pct}%` }} />
-      </div>
-    </div>
-  );
-}
-
-function StatCard({
-  href, accent, icon: Icon, label, value, hint, alert,
-}: {
-  href: string;
-  accent: Accent;
-  icon: LucideIcon;
-  label: string;
-  value: string;
-  hint: string;
-  alert?: boolean;
-}) {
-  const a = ACCENT[accent];
-  return (
-    <Link
-      href={href}
-      className={cn(
-        "block rounded-xl border border-border border-l-2 bg-card p-4 transition-all duration-150 hover:-translate-y-0.5",
-        a.bar, a.ring,
-      )}
-    >
-      <div className="flex items-center justify-between">
-        <span className={cn("flex size-8 items-center justify-center rounded-lg", a.chip)}>
-          <Icon className="size-4" />
-        </span>
-      </div>
-      <p className="mt-3 truncate text-3xl font-bold tabular-nums">{value}</p>
-      <p className="mt-0.5 truncate text-xs text-muted-foreground">{label}</p>
-      <p className={cn("mt-1 truncate text-xs", alert ? "font-medium text-destructive" : "text-muted-foreground/70")}>
-        {hint}
-      </p>
-    </Link>
-  );
-}
-
-function Panel({
-  title, href, icon: Icon, accent, className, children,
-}: {
-  title: string;
-  href: string;
-  icon: LucideIcon;
-  accent: Accent;
-  className?: string;
-  children: React.ReactNode;
-}) {
-  const a = ACCENT[accent];
-  return (
-    <div className={cn("rounded-xl border border-border bg-card p-5", className)}>
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="flex items-center gap-2 font-semibold">
-          <span className={cn("flex size-6 items-center justify-center rounded-md", a.chip)}>
-            <Icon className="size-3.5" />
-          </span>
-          {title}
-        </h2>
-        <Link href={href} className="text-xs font-medium text-primary hover:underline">
-          Открыть
-        </Link>
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function Empty({ text }: { text: string }) {
-  return <p className="py-6 text-center text-sm text-muted-foreground">{text}</p>;
-}
-
-function relativeDay(date: Date, now: Date): string {
-  if (isToday(date)) return "сегодня";
-  if (isTomorrow(date)) return "завтра";
-  const diff = differenceInCalendarDays(date, now);
-  if (diff < 0) return format(date, "d MMM", { locale: ru });
-  return `${diff} дн.`;
 }
