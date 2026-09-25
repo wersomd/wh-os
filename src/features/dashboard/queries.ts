@@ -10,17 +10,14 @@ export async function getDashboardSummary() {
   const endToday = endOfDay(now);
   const in7 = endOfDay(addDays(now, 7));
 
-  const [dueTasks, openTaskCount, accounts, upcomingSubs, openDebts] =
+  const [dueTaskCount, openTaskCount, accounts, upcomingSubs, openDebts] =
     await Promise.all([
       // Tasks due today or overdue, not finished.
-      db.task.findMany({
+      db.task.count({
         where: {
           status: { in: [TaskStatus.TODO, TaskStatus.IN_PROGRESS] },
           dueDate: { not: null, lte: endToday },
         },
-        orderBy: { dueDate: "asc" },
-        take: 6,
-        include: { project: { select: { name: true, color: true } } },
       }),
       db.task.count({
         where: { status: { in: [TaskStatus.TODO, TaskStatus.IN_PROGRESS] } },
@@ -29,8 +26,7 @@ export async function getDashboardSummary() {
       db.subscription.findMany({
         where: { active: true, nextPaymentDate: { lte: in7 } },
         orderBy: { nextPaymentDate: "asc" },
-        take: 6,
-        include: { category: { select: { name: true } } },
+        take: 1,
       }),
       db.debt.findMany({
         where: { status: DebtStatus.OPEN },
@@ -70,13 +66,7 @@ export async function getDashboardSummary() {
 
   return {
     tasks: {
-      due: dueTasks.map((t) => ({
-        id: t.id,
-        title: t.title,
-        dueDate: t.dueDate as Date,
-        priority: t.priority,
-        project: t.project,
-      })),
+      dueCount: dueTaskCount,
       openCount: openTaskCount,
     },
     balances,
@@ -87,7 +77,6 @@ export async function getDashboardSummary() {
       currency: s.currency,
       nextPaymentDate: s.nextPaymentDate,
       icon: s.icon,
-      category: s.category,
     })),
     debts: {
       totals: debtTotals,
@@ -100,15 +89,9 @@ export type DashboardSummary = Awaited<ReturnType<typeof getDashboardSummary>>;
 
 // Personal group summary for the Home screen's "Личное" tile.
 export async function getPersonalSummary() {
-  const [pinnedNotesCount, pinnedNotes, wishlistHighlights, bookmarkCount] =
+  const [pinnedNotesCount, wishlistHighlights, bookmarkCount] =
     await Promise.all([
       db.note.count({ where: { pinned: true } }),
-      db.note.findMany({
-        where: { pinned: true },
-        orderBy: { updatedAt: "desc" },
-        take: 3,
-        select: { id: true, title: true },
-      }),
       db.wishItem.findMany({
         where: { status: WishStatus.WANT },
         orderBy: { createdAt: "desc" },
@@ -118,7 +101,7 @@ export async function getPersonalSummary() {
       db.bookmark.count({ where: { isArchived: false } }),
     ]);
 
-  return { pinnedNotesCount, pinnedNotes, wishlistHighlights, bookmarkCount };
+  return { pinnedNotesCount, wishlistHighlights, bookmarkCount };
 }
 
 export type PersonalSummary = Awaited<ReturnType<typeof getPersonalSummary>>;

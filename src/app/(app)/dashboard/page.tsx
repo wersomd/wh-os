@@ -36,7 +36,7 @@ export default async function DashboardPage() {
   const debtCurrencies = Object.entries(s.debts.totals);
   const topProject = hotProjects[0];
   const nextSub = s.subscriptions[0];
-  const firingToday = s.tasks.due.length;
+  const firingToday = s.tasks.dueCount;
 
   return (
     <>
@@ -52,7 +52,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-5 md:grid-cols-3">
-        <AnimatedIn delay={0}>
+        <AnimatedIn delay={0} className="h-full">
           <GroupTile id="work" title="Работа" icon={Briefcase}>
             <TileRow
               href="/tasks"
@@ -69,13 +69,17 @@ export default async function DashboardPage() {
               <TileRow
                 href={`/projects/${topProject.id}`}
                 label={topProject.name}
-                value={`${topProject.progress.percent ?? 0}%`}
+                value={
+                  topProject.progress.percent === null
+                    ? "Нет задач"
+                    : `${topProject.progress.percent}%`
+                }
               />
             )}
           </GroupTile>
         </AnimatedIn>
 
-        <AnimatedIn delay={0.05}>
+        <AnimatedIn delay={0.05} className="h-full">
           <GroupTile id="money" title="Деньги" icon={Landmark}>
             {currencies.length === 0 ? (
               <TileRow href="/finances" label="Баланс" value="—" />
@@ -107,7 +111,7 @@ export default async function DashboardPage() {
           </GroupTile>
         </AnimatedIn>
 
-        <AnimatedIn delay={0.1}>
+        <AnimatedIn delay={0.1} className="h-full">
           <GroupTile id="personal" title="Личное" icon={Heart}>
             <TileRow
               href="/notes"

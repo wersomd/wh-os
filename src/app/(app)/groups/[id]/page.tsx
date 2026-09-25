@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { GROUP_STYLES } from "@/features/dashboard/components/group-tile";
 import { findGroupById } from "../group-lookup";
 
 export async function generateMetadata({
@@ -36,7 +38,13 @@ export default async function GroupLandingPage({
               href={item.href}
               className="flex items-center gap-3 rounded-2xl border border-border bg-card p-5 shadow-md transition-transform hover:-translate-y-0.5"
             >
-              <span className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <span
+                className={cn(
+                  "flex size-10 items-center justify-center rounded-xl",
+                  GROUP_STYLES[group.id].bg,
+                  GROUP_STYLES[group.id].text,
+                )}
+              >
                 <Icon className="size-5" />
               </span>
               <span className="font-medium">{item.title}</span>

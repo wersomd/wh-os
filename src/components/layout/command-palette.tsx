@@ -46,6 +46,9 @@ export function CommandPalette({
           autoFocus
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && results[0]) go(results[0].href);
+          }}
           placeholder="Куда перейти?"
           className="h-12 rounded-b-none rounded-t-2xl border-x-0 border-t-0 focus-visible:ring-0"
         />

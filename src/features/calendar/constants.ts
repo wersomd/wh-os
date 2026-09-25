@@ -24,16 +24,6 @@ export const CALENDAR_ITEM_LABEL: Record<CalendarKind, string> = {
   event: "Событие",
 };
 
-// Dot color per kind, used by the dashboard mini-grid where there's no
-// room for item text.
-export const CALENDAR_ITEM_DOT: Record<CalendarKind, string> = {
-  task: "bg-blue-500",
-  goal: "bg-fuchsia-500",
-  debt: "bg-rose-500",
-  subscription: "bg-sky-500",
-  event: "bg-emerald-500",
-};
-
 // Text-chip style per kind, used by the full month-grid day cells (title
 // text, not just a dot). Debts are bolded and get a stronger background —
 // due-debt reminders are the highest-stakes item on the calendar.

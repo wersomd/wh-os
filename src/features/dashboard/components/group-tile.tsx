@@ -3,7 +3,7 @@ import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { GroupId } from "@/config/nav";
 
-const GROUP_STYLES: Record<GroupId, { bg: string; text: string }> = {
+export const GROUP_STYLES: Record<GroupId, { bg: string; text: string }> = {
   work: { bg: "bg-group-work-soft", text: "text-group-work" },
   money: { bg: "bg-group-money-soft", text: "text-group-money" },
   personal: { bg: "bg-group-personal-soft", text: "text-group-personal" },
@@ -24,7 +24,7 @@ export function GroupTile({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border p-5 shadow-md transition-shadow hover:shadow-lg",
+        "h-full rounded-2xl border border-border p-5 shadow-md transition-shadow hover:shadow-lg",
         styles.bg,
       )}
     >
