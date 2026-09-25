@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
-import { Sidebar } from "@/components/layout/sidebar";
-import { Topbar } from "@/components/layout/topbar";
+import { IconRail } from "@/components/layout/icon-rail";
+import { TopStrip } from "@/components/layout/top-strip";
 import JarvisBar from "@/features/jarvis/components/jarvis-bar";
 
 export default async function AppLayout({
@@ -15,10 +15,10 @@ export default async function AppLayout({
   };
 
   return (
-    <div className="flex min-h-dvh">
-      <Sidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar user={user} />
+    <div className="min-h-dvh">
+      <IconRail />
+      <div className="flex min-h-dvh flex-col pl-14">
+        <TopStrip user={user} />
         <main className="flex-1 p-4 md:p-8">{children}</main>
       </div>
       <JarvisBar />
