@@ -7,7 +7,7 @@
    electric-blue accent ("signal", #2E5CFF), matching the WH Solutions identity. */
 
 :root {
-  --radius: 0.5rem;
+  --radius: 0.75rem;
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.17 0.006 264);
@@ -33,6 +33,19 @@
   /* Brand mark (node-graph logomark) */
   --brand-frame: oklch(0.17 0.006 264);
   --brand-node: oklch(0.55 0.24 264);
+
+  /* Group accents — Home tiles / group landing pages only, never chrome/CTAs */
+  --group-work: oklch(0.55 0.24 264);
+  --group-work-soft: oklch(0.95 0.02 264);
+  --group-money: oklch(0.62 0.19 45);
+  --group-money-soft: oklch(0.95 0.03 45);
+  --group-personal: oklch(0.5 0.12 155);
+  --group-personal-soft: oklch(0.95 0.02 155);
+
+  /* Shadows — theme-aware; dark mode needs more opacity to read against ink */
+  --wh-shadow-sm: 0 1px 2px 0 oklch(0.17 0.006 264 / 0.06);
+  --wh-shadow-md: 0 4px 14px -4px oklch(0.17 0.006 264 / 0.12);
+  --wh-shadow-lg: 0 12px 32px -8px oklch(0.17 0.006 264 / 0.16);
 }
 
 .dark {
@@ -59,6 +72,17 @@
 
   --brand-frame: oklch(0.32 0.012 264);
   --brand-node: oklch(0.78 0.16 264);
+
+  --group-work: oklch(0.62 0.2 264);
+  --group-work-soft: oklch(0.26 0.03 264);
+  --group-money: oklch(0.72 0.17 45);
+  --group-money-soft: oklch(0.28 0.04 45);
+  --group-personal: oklch(0.74 0.13 155);
+  --group-personal-soft: oklch(0.26 0.03 155);
+
+  --wh-shadow-sm: 0 1px 2px 0 oklch(0 0 0 / 0.3);
+  --wh-shadow-md: 0 4px 14px -4px oklch(0 0 0 / 0.4);
+  --wh-shadow-lg: 0 12px 32px -8px oklch(0 0 0 / 0.5);
 }
 
 @theme inline {
@@ -82,6 +106,17 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  --color-group-work: var(--group-work);
+  --color-group-work-soft: var(--group-work-soft);
+  --color-group-money: var(--group-money);
+  --color-group-money-soft: var(--group-money-soft);
+  --color-group-personal: var(--group-personal);
+  --color-group-personal-soft: var(--group-personal-soft);
+
+  --shadow-sm: var(--wh-shadow-sm);
+  --shadow-md: var(--wh-shadow-md);
+  --shadow-lg: var(--wh-shadow-lg);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-unbounded), var(--font-inter), sans-serif;
